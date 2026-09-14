@@ -1,9 +1,10 @@
 /**
  * STEAD — main page.
  *
- * Three steps, one page, no routing:
+ * Four steps, one page, no routing:
  *   "landing"     → LandingScreen
  *   "calibration" → CalibrationGame (full-screen overlay)
+ *   "spi-results" → SPIResultsScreen (shows baseline SPI and preset)
  *   "demo"        → ComparisonCanvas + all overlays
  *
  * The step state lives here and is the single source of truth for the flow.
@@ -11,24 +12,20 @@
 
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { LandingScreen } from "@/components/LandingScreen";
-import { CalibrationGame } from "@/components/CalibrationGame";
+import { CalibrationGame, type CalibrationOutput } from "@/components/CalibrationGame";
+import { SPIResultsScreen } from "@/components/SPIResultsScreen";
 import { ComparisonCanvas } from "@/components/ComparisonCanvas";
 import { DebugPanel } from "@/components/DebugPanel";
 import { AccuracyBoard } from "@/components/AccuracyBoard";
 import { ClickTargetLayer, ClickTargetLayerHandle, TARGET_LABELS } from "@/components/ClickTargetLayer";
 import { TremorInjector } from "@/lib/tremorInjector";
-import type { CalibrationResult } from "@/lib/calibration";
+import type { SPIClick } from "@/lib/steadPrecisionIndex";
 
-type Step = "landing" | "calibration" | "demo";
+type Step = "landing" | "calibration" | "spi-results" | "demo";
 
 const DEFAULTS = { amplitude: 8, frequency: 5, minCutoff: 1.0, beta: 0.007 };
-
-interface Hits {
-  steadOnHits: number; steadOnTotal: number;
-  steadOffHits: number; steadOffTotal: number;
-}
 
 export default function Home() {
   const [step, setStep] = useState<Step>("landing");
@@ -38,33 +35,59 @@ export default function Home() {
   const [beta, setBeta] = useState(DEFAULTS.beta);
   const [isPersonalised, setIsPersonalised] = useState(false);
   const [steadEnabled, setSteadEnabled] = useState(true);
+  
+  const [calibrationOutput, setCalibrationOutput] = useState<CalibrationOutput | null>(null);
+
   const [activeTarget, setActiveTarget] = useState<number | null>(null);
-  const [hits, setHits] = useState<Hits>({ steadOnHits: 0, steadOnTotal: 0, steadOffHits: 0, steadOffTotal: 0 });
+  const targetStartTimeRef = useRef<number>(0);
+
+  const [steadOnClicks, setSteadOnClicks] = useState<SPIClick[]>([]);
+  const [steadOffClicks, setSteadOffClicks] = useState<SPIClick[]>([]);
   const [lastHit, setLastHit] = useState<string | null>(null);
 
   const targetLayerRef = useRef<ClickTargetLayerHandle>(null);
   const injectorRef = useRef(new TremorInjector(DEFAULTS.amplitude, DEFAULTS.frequency));
 
-  const handleCalibrationComplete = useCallback((result: CalibrationResult) => {
-    setMinCutoff(result.minCutoff);
-    setBeta(result.beta);
+  const handleCalibrationComplete = useCallback((output: CalibrationOutput) => {
+    setMinCutoff(output.calibration.minCutoff);
+    setBeta(output.calibration.beta);
     setIsPersonalised(true);
-    setStep("demo");
+    setCalibrationOutput(output);
+    setStep("spi-results");
   }, []);
 
   const handleSkip = useCallback(() => setStep("demo"), []);
 
-  const handleClickResolved = useCallback(({ predictedIndex }: { rawX: number; rawY: number; predictedIndex: number }) => {
+  const handleClickResolved = useCallback(({ predictedIndex, deviationPx }: { rawX: number; rawY: number; predictedIndex: number; deviationPx: number }) => {
     if (activeTarget === null) return;
     const isHit = predictedIndex === activeTarget;
-    setHits(prev => steadEnabled
-      ? { ...prev, steadOnTotal: prev.steadOnTotal + 1, steadOnHits: prev.steadOnHits + (isHit ? 1 : 0) }
-      : { ...prev, steadOffTotal: prev.steadOffTotal + 1, steadOffHits: prev.steadOffHits + (isHit ? 1 : 0) }
-    );
+    const timeToClickMs = performance.now() - targetStartTimeRef.current;
+    
+    const clickData: SPIClick = { hit: isHit, deviationPx, timeToClickMs };
+
+    if (steadEnabled) {
+      setSteadOnClicks(prev => [...prev, clickData]);
+    } else {
+      setSteadOffClicks(prev => [...prev, clickData]);
+    }
+    
     setLastHit(isHit ? "✓ Hit" : "✗ Miss");
     setTimeout(() => setLastHit(null), 700);
-    setTimeout(() => setActiveTarget(i => i !== null ? (i + 1) % TARGET_LABELS.length : null), 350);
+    setTimeout(() => {
+      setActiveTarget(i => {
+        const next = i !== null ? (i + 1) % TARGET_LABELS.length : null;
+        if (next !== null) targetStartTimeRef.current = performance.now();
+        return next;
+      });
+    }, 350);
   }, [activeTarget, steadEnabled]);
+
+  // Set start time when test begins
+  useEffect(() => {
+    if (activeTarget !== null) {
+      targetStartTimeRef.current = performance.now();
+    }
+  }, [activeTarget]);
 
   return (
     <main className="relative w-screen h-screen overflow-hidden select-none">
@@ -83,7 +106,16 @@ export default function Home() {
         />
       )}
 
-      {/* ── Step 3: Live demo ── */}
+      {/* ── Step 3: SPI Results ── */}
+      {step === "spi-results" && calibrationOutput && (
+        <SPIResultsScreen
+          presetKey={calibrationOutput.presetKey}
+          spiBeforeStead={calibrationOutput.spiBeforeStead}
+          onContinue={() => setStep("demo")}
+        />
+      )}
+
+      {/* ── Step 4: Live demo ── */}
       {step === "demo" && (
         <>
           {/* Canvas layer */}
@@ -92,8 +124,9 @@ export default function Home() {
             frequency={frequency}
             minCutoff={minCutoff}
             beta={beta}
+            rawMode={!steadEnabled} // Connect "Reset to raw" (STEAD OFF) directly to canvas rawMode
             targetLayerRef={targetLayerRef}
-            onClickResolved={steadEnabled ? handleClickResolved : undefined}
+            onClickResolved={handleClickResolved} // Always track clicks, rawMode will pass them through
           />
 
           {/* DOM button targets */}
@@ -120,10 +153,12 @@ export default function Home() {
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
                 <span className="text-slate-400 text-xs font-mono">Raw + tremor</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-green-400 shrink-0" />
-                <span className="text-slate-400 text-xs font-mono">STEAD filtered</span>
-              </div>
+              {!steadEnabled ? null : (
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-400 shrink-0" />
+                  <span className="text-slate-400 text-xs font-mono">STEAD filtered</span>
+                </div>
+              )}
             </div>
 
             {/* Live params */}
@@ -148,7 +183,7 @@ export default function Home() {
                   : "bg-slate-800/80 border-slate-700 text-slate-500",
               ].join(" ")}
             >
-              STEAD {steadEnabled ? "ON" : "OFF"}
+              STEAD {steadEnabled ? "ON" : "OFF (Reset to raw)"}
             </button>
 
             {/* Accuracy test toggle */}
@@ -193,8 +228,8 @@ export default function Home() {
 
           {/* ── Accuracy board (bottom-right) ── */}
           <AccuracyBoard
-            steadOnHits={hits.steadOnHits} steadOnTotal={hits.steadOnTotal}
-            steadOffHits={hits.steadOffHits} steadOffTotal={hits.steadOffTotal}
+            steadOnClicks={steadOnClicks}
+            steadOffClicks={steadOffClicks}
           />
 
           {/* ── Bottom hint (fades when accuracy test is running) ── */}

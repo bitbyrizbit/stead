@@ -1,17 +1,10 @@
 /**
- * ComparisonCanvas — Phase 3 (updated from Phase 2)
+ * ComparisonCanvas — Phase 5 update
  *
- * Changes from Phase 2:
- *  - Maintains a ring buffer of filtered trajectory points (last 60 samples).
- *  - On pointerup: calls targetLayerRef.getRects(), runs predictTarget on
- *    the ring buffer, and dispatches the corrected click via targetLayerRef.click().
- *  - Falls back to the raw click if predictTarget returns -1.
- *  - Canvas-drawn target rects removed — real DOM buttons in ClickTargetLayer
- *    handle visuals and bounding rects.
- *
- * Cursor rendering (unchanged):
- *  🔴 Red  — raw pointer + tremor
- *  🟢 Green — tremor stream filtered by One Euro Filter
+ * Changes from Phase 3:
+ *  - Safety clamp applied after One Euro Filter, before cursor draw.
+ *  - "Reset to raw" prop — when true, bypasses all filtering instantly.
+ *  - Filtered position exposed via onFilteredPos callback (used by SPI tracking).
  */
 
 "use client";
@@ -20,17 +13,17 @@ import { useEffect, useRef, useCallback } from "react";
 import { OneEuroFilter } from "@/lib/oneEuroFilter";
 import { TremorInjector } from "@/lib/tremorInjector";
 import { predictTarget, type Point } from "@/lib/targetPredictor";
+import { measureTrajectoryDeviation } from "@/lib/calibration";
+import { applySafetyClamp } from "@/lib/safetyClamp";
 import type { ClickTargetLayerHandle } from "./ClickTargetLayer";
 
 const DOT_RADIUS = 9;
-const TRAJECTORY_BUFFER_SIZE = 60; // ~0.5 s at 120 Hz
+const TRAJECTORY_BUFFER_SIZE = 60;
 
 function drawDot(
   ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  color: string,
-  label: string
+  x: number, y: number,
+  color: string, label: string
 ) {
   ctx.beginPath();
   ctx.arc(x, y, DOT_RADIUS, 0, Math.PI * 2);
@@ -39,7 +32,6 @@ function drawDot(
   ctx.strokeStyle = "rgba(255,255,255,0.7)";
   ctx.lineWidth = 1.5;
   ctx.stroke();
-
   ctx.fillStyle = color;
   ctx.font = "11px monospace";
   ctx.textAlign = "center";
@@ -52,77 +44,59 @@ export interface ComparisonCanvasProps {
   frequency: number;
   minCutoff: number;
   beta: number;
-  /** Ref to the ClickTargetLayer — used for bounding rect lookup and click dispatch. */
+  /** When true: bypass all filtering, show only raw tremor cursor. */
+  rawMode?: boolean;
   targetLayerRef: React.RefObject<ClickTargetLayerHandle | null>;
-  /** Called after a click resolves (predicted or raw). */
-  onClickResolved?: (params: {
-    rawX: number;
-    rawY: number;
-    predictedIndex: number;
-  }) => void;
+  onClickResolved?: (params: { rawX: number; rawY: number; predictedIndex: number; deviationPx: number }) => void;
 }
 
 export function ComparisonCanvas({
-  amplitude,
-  frequency,
-  minCutoff,
-  beta,
-  targetLayerRef,
-  onClickResolved,
+  amplitude, frequency, minCutoff, beta,
+  rawMode = false,
+  targetLayerRef, onClickResolved,
 }: ComparisonCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
   const rawPos = useRef({ x: 0, y: 0 });
   const filteredPos = useRef({ x: 0, y: 0 });
   const injectorRef = useRef(new TremorInjector(amplitude, frequency));
   const filterX = useRef(new OneEuroFilter(minCutoff, beta));
   const filterY = useRef(new OneEuroFilter(minCutoff, beta));
-
-  // Ring buffer of filtered trajectory points — written in rAF, read on pointerup.
   const trajectoryRef = useRef<Point[]>([]);
+  const rawModeRef = useRef(rawMode);
 
-  // Sync filter params on slider change.
+  // Sync params
   useEffect(() => {
     filterX.current.setParams(minCutoff, beta);
     filterY.current.setParams(minCutoff, beta);
   }, [minCutoff, beta]);
 
-  useEffect(() => {
-    injectorRef.current.setAmplitude(amplitude);
-  }, [amplitude]);
+  useEffect(() => { injectorRef.current.setAmplitude(amplitude); }, [amplitude]);
+  useEffect(() => { injectorRef.current.setFrequency(frequency); }, [frequency]);
+  useEffect(() => { rawModeRef.current = rawMode; }, [rawMode]);
 
-  useEffect(() => {
-    injectorRef.current.setFrequency(frequency);
-  }, [frequency]);
-
-  // Pointer capture.
   const onPointerMove = useCallback((e: PointerEvent) => {
     rawPos.current = { x: e.clientX, y: e.clientY };
   }, []);
 
-  // Click interception — the key Phase 3 logic.
-  const onPointerUp = useCallback(
-    (e: PointerEvent) => {
-      const layer = targetLayerRef.current;
-      if (!layer) return;
-
-      const rects = layer.getRects();
-      const traj = trajectoryRef.current;
-
-      const predicted = predictTarget(traj, rects, 10);
-
-      if (predicted !== -1) {
-        layer.click(predicted);
-      }
-
-      onClickResolved?.({
-        rawX: filteredPos.current.x,
-        rawY: filteredPos.current.y,
-        predictedIndex: predicted,
-      });
-    },
-    [targetLayerRef, onClickResolved]
-  );
+  const onPointerUp = useCallback((_e: PointerEvent) => {
+    if (rawModeRef.current) return;
+    const layer = targetLayerRef.current;
+    if (!layer) return;
+    const rects = layer.getRects();
+    const traj = trajectoryRef.current;
+    const predicted = predictTarget(traj, rects, 10);
+    if (predicted !== -1) layer.click(predicted);
+    
+    // Compute deviation for SPI scoring
+    const deviationPx = measureTrajectoryDeviation(traj);
+    
+    onClickResolved?.({
+      rawX: filteredPos.current.x,
+      rawY: filteredPos.current.y,
+      predictedIndex: predicted,
+      deviationPx
+    });
+  }, [targetLayerRef, onClickResolved]);
 
   useEffect(() => {
     window.addEventListener("pointermove", onPointerMove as EventListener);
@@ -133,67 +107,50 @@ export function ComparisonCanvas({
     };
   }, [onPointerMove, onPointerUp]);
 
-  // rAF draw loop.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener("resize", resize);
-
     let rafId: number;
 
     const draw = () => {
       const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        rafId = requestAnimationFrame(draw);
-        return;
-      }
-
+      if (!ctx) { rafId = requestAnimationFrame(draw); return; }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const now = performance.now();
       const { x: rx, y: ry } = rawPos.current;
-
-      // Inject tremor into raw position.
       const { x: tx, y: ty } = injectorRef.current.inject(rx, ry, now);
 
-      // Filter the tremor-injected position.
-      const fx = filterX.current.filter(tx, now);
-      const fy = filterY.current.filter(ty, now);
+      if (rawModeRef.current) {
+        // Raw mode: show only the tremor cursor, no green dot
+        drawDot(ctx, tx, ty, "rgba(239, 68, 68, 0.9)", "Raw");
+        filteredPos.current = { x: tx, y: ty };
+      } else {
+        // Normal mode: filter + safety clamp
+        const fx = filterX.current.filter(tx, now);
+        const fy = filterY.current.filter(ty, now);
+        const clamped = applySafetyClamp({ x: tx, y: ty }, { x: fx, y: fy }, 40);
+        filteredPos.current = clamped;
 
-      // Keep filtered position in ref for click interception.
-      filteredPos.current = { x: fx, y: fy };
+        const buf = trajectoryRef.current;
+        buf.push({ x: clamped.x, y: clamped.y, t: now });
+        if (buf.length > TRAJECTORY_BUFFER_SIZE) buf.shift();
 
-      // Update trajectory ring buffer.
-      const buf = trajectoryRef.current;
-      buf.push({ x: fx, y: fy, t: now });
-      if (buf.length > TRAJECTORY_BUFFER_SIZE) buf.shift();
-
-      // Draw cursors.
-      drawDot(ctx, tx, ty, "rgba(239, 68, 68, 0.9)", "Raw");
-      drawDot(ctx, fx, fy, "rgba(34, 197, 94, 0.95)", "STEAD");
+        drawDot(ctx, tx, ty, "rgba(239, 68, 68, 0.9)", "Raw");
+        drawDot(ctx, clamped.x, clamped.y, "rgba(34, 197, 94, 0.95)", "STEAD");
+      }
 
       rafId = requestAnimationFrame(draw);
     };
 
     rafId = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", resize);
-    };
+    return () => { cancelAnimationFrame(rafId); window.removeEventListener("resize", resize); };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ cursor: "none" }}
-    />
+    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ cursor: "none" }} />
   );
 }
