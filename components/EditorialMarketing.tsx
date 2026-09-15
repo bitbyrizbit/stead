@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, Activity, Crosshair, Cpu, CheckCircle, ShieldCheck } from "lucide-react";
 
-interface EditorialMarketingProps {
+interface ModernMarketingProps {
   onStart: () => void;
 }
 
-export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
+export function EditorialMarketing({ onStart }: ModernMarketingProps) {
   const [currentMode, setCurrentMode] = useState<"raw" | "damped">("damped");
   const [hitList, setHitList] = useState<Set<number>>(new Set());
   
@@ -19,6 +21,9 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rawCursorRef = useRef<HTMLDivElement>(null);
   const dampedCursorRef = useRef<HTMLDivElement>(null);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef });
 
   const simState = useRef({
     mousePos: { x: -100, y: -100 },
@@ -29,11 +34,6 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
   });
 
   const totalTargets = 6;
-
-  // Sync mode state for the metrics below the canvas
-  const metrics = currentMode === "raw" 
-    ? { accuracy: "48.2%", time: "820 ms", variance: "14.80 mm²", progress: "48.2%", color: "bg-zinc-400" }
-    : { accuracy: "96.4%", time: "340 ms", variance: "1.42 mm²", progress: "96.4%", color: "bg-emerald-600" };
 
   const hitTarget = (id: number) => {
     setHitList(prev => {
@@ -93,7 +93,7 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
       state.time += 0.05;
 
       if (state.mousePos.x > 0 && state.mousePos.y > 0) {
-        // High frequency biological jitter simulating essential tremor
+        // High frequency biological jitter
         const jitterIntensity = 7.5;
         const jitterX = Math.sin(state.time * tremorFreq * 2.2) * jitterIntensity + Math.cos(state.time * tremorFreq * 4.1) * (jitterIntensity * 0.45);
         const jitterY = Math.cos(state.time * tremorFreq * 2.5) * jitterIntensity + Math.sin(state.time * tremorFreq * 3.7) * (jitterIntensity * 0.45);
@@ -122,7 +122,7 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
           dampedY: state.dampedPos.y,
           life: 1.0
         });
-        if (state.history.length > 55) {
+        if (state.history.length > 50) {
           state.history.shift();
         }
       }
@@ -132,7 +132,7 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
       if (state.history.length > 1) {
         if (currentMode === "raw") {
           ctx.beginPath();
-          ctx.strokeStyle = "rgba(161, 161, 170, 0.4)"; // zinc-400
+          ctx.strokeStyle = "rgba(239, 68, 68, 0.4)"; // red-500
           ctx.lineWidth = 1.5;
           ctx.setLineDash([4, 4]);
           for (let i = 0; i < state.history.length; i++) {
@@ -145,7 +145,7 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
 
         if (currentMode === "damped") {
           ctx.beginPath();
-          ctx.strokeStyle = "rgba(5, 150, 105, 0.85)"; // emerald-600
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.9)"; // emerald-500
           ctx.lineWidth = 2.0;
           ctx.setLineDash([]);
           for (let i = 0; i < state.history.length; i++) {
@@ -183,250 +183,244 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
   }, []);
 
   return (
-    <div className="bg-zinc-50 text-zinc-900 antialiased min-h-screen flex flex-col font-body-md overflow-x-hidden selection:bg-blue-100 selection:text-blue-900">
+    <div ref={containerRef} className="bg-[#09090b] text-zinc-50 min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-50">
       
-      {/* ── TopNavBar ── */}
-      <header className="w-full bg-zinc-50/80 backdrop-blur-md border-b border-zinc-200 sticky top-0 z-50">
-        <div className="w-full px-6 md:px-12 max-w-7xl mx-auto flex items-center justify-between h-20">
-          <div className="flex items-center gap-6">
-            <a className="font-headline-md text-headline-md font-medium tracking-tight text-zinc-900 transition-colors hover:text-blue-600" href="#">
-              Stead
-            </a>
-            <div className="hidden lg:flex items-center gap-2 text-zinc-500">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-              <span className="font-caption text-caption">Kinematic motor stabilizing protocol</span>
+      {/* ── Background Glows ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden flex justify-center z-0">
+        <div className="w-[1000px] h-[500px] rounded-[100%] bg-emerald-500/10 blur-[120px] -top-32 absolute"></div>
+        <div className="w-[800px] h-[600px] rounded-[100%] bg-blue-600/5 blur-[120px] top-1/3 absolute left-[-200px]"></div>
+      </div>
+
+      {/* ── Navbar ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-zinc-950/50 backdrop-blur-md">
+        <div className="w-full px-6 max-w-7xl mx-auto flex items-center justify-between h-16">
+          <div className="flex items-center gap-4">
+            <span className="font-semibold text-lg tracking-tight text-white flex items-center gap-2">
+              <Crosshair className="w-5 h-5 text-emerald-500" /> STEAD
+            </span>
+            <div className="hidden lg:flex items-center px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+              v0.1.0 Kernel
             </div>
           </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <a className="text-zinc-600 font-body-sm text-body-sm hover:text-zinc-900 transition-colors" href="#overview">Overview</a>
-            <a className="text-zinc-600 font-body-sm text-body-sm hover:text-zinc-900 transition-colors" href="#calibration">Calibration</a>
-            <a className="text-blue-600 font-body-sm text-body-sm font-medium relative after:content-[''] after:absolute after:bottom-[-1.25rem] after:left-0 after:w-full after:h-[2px] after:bg-blue-600" href="#playground">Playground</a>
-            <a className="text-zinc-600 font-body-sm text-body-sm hover:text-zinc-900 transition-colors" href="#extension">Extension</a>
-          </nav>
           <div className="flex items-center gap-4">
-            <button onClick={onStart} className="hidden sm:inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 rounded-full text-zinc-700 font-body-sm text-body-sm hover:text-zinc-900 hover:border-zinc-400 hover:bg-white shadow-sm transition-all duration-200">
-              <span className="material-symbols-outlined text-[1.125rem]">tune</span>
-              <span>Calibrate</span>
+            <a href="https://github.com/bitbyrizbit/stead" target="_blank" rel="noreferrer" className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.03c3.15-.38 6.5-1.4 6.5-7.17A5.1 5.1 0 0 0 19 4.8 5 5 0 0 0 19 2s-1-.3-3 1.6a11.3 11.3 0 0 0-6 0C8 1.7 7 2 7 2a5 5 0 0 0 0 2.8 5.1 5.1 0 0 0-1.5 3.01c0 5.76 3.35 6.78 6.5 7.17A4.8 4.8 0 0 0 11 18v4"/><path d="M9 20a5 5 0 0 1-5-2 5 5 0 0 1-1-4"/></svg> 
+              <span className="hidden sm:inline">GitHub</span>
+            </a>
+            <button onClick={onStart} className="px-4 py-1.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 transition-colors text-sm font-semibold shadow-[0_0_15px_rgba(255,255,255,0.15)] flex items-center gap-2">
+              Calibrate <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </header>
 
-      <main className="flex-grow w-full">
-        {/* ── Hero Introduction ── */}
-        <section className="w-full px-6 md:px-12 pt-20 pb-12 max-w-7xl mx-auto" id="overview">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
-            <div className="md:col-span-8">
-              <div className="flex items-center gap-2 text-blue-600 mb-4">
-                <span className="w-2 h-2 rounded-full bg-blue-600 animate-gentle"></span>
-                <span className="font-label-editorial text-label-editorial tracking-[0.08em] uppercase">Interactive Laboratory</span>
-              </div>
-              <h1 className="font-display-hero-mobile md:font-display-hero text-display-hero-mobile md:text-display-hero text-zinc-900 font-medium leading-tight tracking-tight">
-                Inside the tactile arena.
-              </h1>
-            </div>
-            <div className="md:col-span-4 flex flex-col justify-end">
-              <p className="font-body-lead text-body-lead text-zinc-600 pb-2">
-                Experience the visceral physical shift between involuntary kinetic oscillations and architectural damping algorithms.
-              </p>
-              <p className="font-caption text-caption text-zinc-500">
-                Interactive dampening frequency: 4.8 Hz. Zero simulated latency.
-              </p>
-            </div>
-          </div>
-          <div className="w-full h-[1px] bg-zinc-200 mt-12"></div>
+      <main className="flex-grow w-full z-10 relative mt-16">
+        {/* ── Hero Section ── */}
+        <section className="w-full px-6 pt-32 pb-24 max-w-7xl mx-auto flex flex-col items-center text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-8"
+          >
+            <Activity className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-medium text-zinc-300">Infrastructure-Level Pointer Dampening</span>
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white max-w-4xl leading-[1.05]"
+          >
+            Your intent,<br />not your tremor.
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            className="mt-8 text-lg md:text-xl text-zinc-400 max-w-2xl font-medium"
+          >
+            An invisible mathematical substrate that filters biological oscillation. Experience sub-millisecond cursor stabilization directly in the browser.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+            className="mt-10 flex items-center gap-4"
+          >
+            <button onClick={onStart} className="px-6 py-3 rounded-full bg-white text-zinc-950 font-semibold hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+              Begin Diagnostic <ArrowRight className="w-4 h-4" />
+            </button>
+          </motion.div>
         </section>
 
-        {/* ── Master Switcher & Protocol Bar ── */}
-        <section className="w-full px-6 md:px-12 max-w-7xl mx-auto pb-8" id="calibration">
-          <div className="bg-white border border-zinc-200 rounded-xl shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
-              <span className="font-label-editorial text-label-editorial text-zinc-500 uppercase tracking-wider">Motor Control Mode</span>
-              <div className="inline-flex p-1 bg-zinc-50 border border-zinc-200 rounded-full relative">
-                <button 
-                  onClick={() => setCurrentMode("raw")}
-                  className={`px-5 py-2 rounded-full font-body-sm text-body-sm font-medium transition-all duration-200 flex items-center gap-2 ${currentMode === 'raw' ? 'bg-white text-zinc-900 shadow-sm border border-zinc-200/60' : 'text-zinc-500 hover:text-zinc-900'}`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${currentMode === 'raw' ? 'bg-zinc-400 animate-pulse' : 'border border-zinc-300'}`}></span>
-                  <span>Unassisted Tremor</span>
-                </button>
-                <button 
-                  onClick={() => setCurrentMode("damped")}
-                  className={`px-5 py-2 rounded-full font-body-sm text-body-sm font-medium transition-all duration-200 flex items-center gap-2 ${currentMode === 'damped' ? 'bg-blue-600 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${currentMode === 'damped' ? 'bg-white animate-pulse' : 'border border-zinc-300'}`}></span>
-                  <span>Active Stabilization</span>
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center gap-8 text-zinc-600 font-body-sm text-body-sm">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-blue-600 text-sm">water_lux</span>
-                <span>Target acquisition: <strong className="text-zinc-900 font-semibold">{hitList.size} / {totalTargets}</strong></span>
-              </div>
-              <div className="hidden sm:flex items-center gap-2">
-                <span className="material-symbols-outlined text-emerald-600 text-sm">speed</span>
-                <span>Variance: <span className="text-zinc-900 font-semibold">{metrics.variance}</span></span>
-              </div>
-              <button onClick={resetTargets} className="text-zinc-500 hover:text-blue-600 text-caption font-label-editorial uppercase tracking-wider transition-colors duration-200 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[1rem]">refresh</span> Reset
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Tactile Arena Stage ── */}
-        <section className="w-full px-6 md:px-12 max-w-7xl mx-auto" id="playground">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* ── Architecture Sticky Layout ── */}
+        <section className="w-full px-6 py-24 max-w-7xl mx-auto border-t border-white/10" id="playground">
+          <div className="flex flex-col lg:flex-row gap-16 relative">
             
-            {/* Arena Canvas */}
-            <div className="lg:col-span-8 flex flex-col">
-              <div 
-                ref={arenaRef}
-                onMouseMove={onMouseMove}
-                onMouseLeave={onMouseLeave}
-                className="relative w-full h-[540px] md:h-[620px] bg-white border border-zinc-200 rounded-xl shadow-sm overflow-hidden cursor-crosshair select-none"
+            {/* Left Col (Text) */}
+            <div className="lg:w-1/3 flex flex-col gap-24 pt-10">
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="flex flex-col gap-4"
               >
-                <div className="absolute inset-0 pointer-events-none opacity-40 flex items-center justify-center">
-                  <div className="w-[300px] h-[300px] rounded-full border border-zinc-200"></div>
-                  <div className="w-[520px] h-[520px] rounded-full border border-zinc-200 absolute"></div>
-                  <div className="w-[740px] h-[740px] rounded-full border border-zinc-200 absolute"></div>
-                  <div className="absolute w-full h-[1px] bg-zinc-100"></div>
-                  <div className="absolute h-full w-[1px] bg-zinc-100"></div>
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-lg">
+                  <Cpu className="w-5 h-5 text-zinc-300" />
                 </div>
-                <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none"></canvas>
-                
-                {/* Targets */}
-                <div className={`target-node absolute left-[18%] top-[25%] p-4 transition-transform duration-200 group cursor-pointer ${hitList.has(1) ? 'opacity-40 scale-95' : ''}`} onClick={() => hitTarget(1)}>
-                  <div className="w-10 h-10 rounded-full border border-zinc-200 group-hover:border-blue-400 group-hover:shadow-md flex items-center justify-center relative bg-white/80 backdrop-blur-sm transition-all">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600 group-hover:scale-125 transition-transform"></span>
-                  </div>
-                </div>
-                
-                <div className={`target-node absolute left-[45%] top-[18%] p-4 transition-transform duration-200 group cursor-pointer ${hitList.has(2) ? 'opacity-40 scale-95' : ''}`} onClick={() => hitTarget(2)}>
-                  <div className="w-14 h-14 rounded-full border border-zinc-200 group-hover:border-blue-400 group-hover:shadow-md flex items-center justify-center relative bg-white/80 backdrop-blur-sm transition-all">
-                    <div className="w-4 h-4 rounded-full border border-blue-400/60 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className={`target-node absolute right-[18%] top-[35%] p-4 transition-transform duration-200 group cursor-pointer ${hitList.has(3) ? 'opacity-40 scale-95' : ''}`} onClick={() => hitTarget(3)}>
-                  <div className="px-5 py-2.5 rounded-full border border-zinc-200 group-hover:border-blue-400 group-hover:shadow-md bg-white flex items-center gap-2 transition-all">
-                    <span className="material-symbols-outlined text-xs text-blue-600">adjust</span>
-                    <span className="font-body-sm text-sm text-zinc-900 font-medium">Precision Anchor</span>
-                  </div>
-                </div>
-                
-                <div className={`target-node absolute left-[26%] bottom-[28%] p-4 transition-transform duration-200 group cursor-pointer ${hitList.has(4) ? 'opacity-40 scale-95' : ''}`} onClick={() => hitTarget(4)}>
-                  <div className="w-12 h-12 rounded-full border border-zinc-200 group-hover:border-blue-400 group-hover:shadow-md flex items-center justify-center relative bg-white/80 transition-all">
-                    <span className="w-3 h-3 rounded-full bg-zinc-300 group-hover:bg-blue-500 transition-colors"></span>
-                  </div>
-                </div>
-                
-                <div className={`target-node absolute left-[62%] bottom-[22%] p-4 transition-transform duration-200 group cursor-pointer ${hitList.has(5) ? 'opacity-40 scale-95' : ''}`} onClick={() => hitTarget(5)}>
-                  <div className="px-4 py-2 border border-zinc-200 group-hover:border-blue-400 group-hover:shadow-md bg-white rounded-lg flex items-center gap-3 transition-all">
-                    <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-                    <span className="font-body-sm text-sm text-zinc-800 font-medium">Capture Link</span>
-                  </div>
-                </div>
-                
-                <div className={`target-node absolute right-[12%] bottom-[42%] p-4 transition-transform duration-200 group cursor-pointer ${hitList.has(6) ? 'opacity-40 scale-95' : ''}`} onClick={() => hitTarget(6)}>
-                  <div className="w-8 h-8 rounded-full border border-zinc-200 group-hover:border-blue-400 group-hover:shadow-md flex items-center justify-center bg-white/80 transition-all">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-                  </div>
-                </div>
+                <h3 className="text-2xl font-bold tracking-tight text-white">Algorithmic Dampening</h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  Continuous real-time Fourier analysis identifies high-frequency cyclic tremors, cleanly subtracting them without adding perceived mouse lag.
+                </p>
+              </motion.div>
 
-                {/* Virtual Cursors */}
-                <div ref={rawCursorRef} className="custom-cursor-raw absolute w-4 h-4 rounded-full border border-zinc-400 pointer-events-none hidden">
-                  <div className="w-1 h-1 bg-zinc-400 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="flex flex-col gap-4"
+              >
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-lg">
+                  <Crosshair className="w-5 h-5 text-emerald-500" />
                 </div>
-                <div ref={dampedCursorRef} className="custom-cursor-damped absolute w-6 h-6 rounded-full border-2 border-emerald-500 pointer-events-none hidden shadow-sm">
-                  <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-                </div>
+                <h3 className="text-2xl font-bold tracking-tight text-white">Magnetic Geometry</h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  Interactive nodes organically pull the cursor toward their gravitational centers, transforming strenuous fine clicks into effortless actions.
+                </p>
+              </motion.div>
 
-                <div className="absolute bottom-4 left-6 pointer-events-none">
-                  <span className="font-label-editorial text-label-editorial text-zinc-400 tracking-wider uppercase">
-                    Move pointer freely across nodes
-                  </span>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="flex flex-col gap-4"
+              >
+                <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-lg">
+                  <ShieldCheck className="w-5 h-5 text-blue-500" />
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-zinc-600 font-body-sm text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full border-2 border-zinc-400 border-dashed inline-block"></span>
-                  <span>Raw Tremor Pathway</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
-                  <span>Active Filtered Vector</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-zinc-400">lens</span>
-                  <span>Magnetic Capture Field</span>
-                </div>
-              </div>
+                <h3 className="text-2xl font-bold tracking-tight text-white">Zero Telemetry</h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  All kinematic processing happens locally in real-time. No coordinate data ever leaves your device. Fully open-source kernel.
+                </p>
+              </motion.div>
             </div>
 
-            {/* Ledger & Controls */}
-            <div className="lg:col-span-4 flex flex-col gap-6">
-              <div className="bg-white border border-zinc-200 rounded-xl shadow-sm p-6 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between border-b border-zinc-100 pb-4 mb-6">
-                    <span className="font-headline-sm text-headline-sm text-zinc-900 font-semibold">Observation Ledger</span>
-                    <span className="font-label-editorial text-label-editorial text-blue-600 uppercase">Realtime 60Hz</span>
+            {/* Right Col (Sticky Canvas) */}
+            <div className="lg:w-2/3 lg:sticky lg:top-32 h-fit">
+              <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-6">
+                
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => setCurrentMode("raw")}
+                      className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${currentMode === 'raw' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'text-zinc-500 hover:text-zinc-300'}`}
+                    >
+                      RAW TREMOR
+                    </button>
+                    <button 
+                      onClick={() => setCurrentMode("damped")}
+                      className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all flex items-center gap-2 ${currentMode === 'damped' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'text-zinc-500 hover:text-zinc-300'}`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${currentMode === 'damped' ? 'bg-emerald-400 animate-pulse' : 'bg-transparent'}`}></span>
+                      STEAD ACTIVE
+                    </button>
                   </div>
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex items-baseline justify-between">
-                        <span className="font-body-sm text-body-sm text-zinc-500 font-medium">Target Acquisition</span>
-                        <span className="font-headline-md text-headline-md text-zinc-900 font-medium">{metrics.accuracy}</span>
-                      </div>
-                      <div className="w-full bg-zinc-100 h-2 mt-3 rounded-full overflow-hidden">
-                        <div className={`${metrics.color} h-full transition-all duration-500 rounded-full`} style={{ width: metrics.progress }}></div>
-                      </div>
-                      <div className="flex justify-between text-caption font-caption text-zinc-500 mt-2">
-                        <span>Unassisted mean: 48.2%</span>
-                        <span className="text-emerald-600 font-medium">+48.2% uplift</span>
-                      </div>
-                    </div>
-                    <div className="border-t border-zinc-100 pt-5">
-                      <div className="flex items-baseline justify-between">
-                        <span className="font-body-sm text-body-sm text-zinc-500 font-medium">Mean Duration to Target</span>
-                        <span className="font-headline-md text-headline-md text-zinc-900 font-medium">{metrics.time}</span>
-                      </div>
-                      <p className="font-caption text-caption text-zinc-500 mt-2 leading-relaxed">
-                        Eliminates recurring overshooting and cyclic corrections.
-                      </p>
-                    </div>
+                  <div className="flex items-center gap-2 text-xs font-medium text-zinc-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-white/5">
+                    Target Score: <span className="text-white font-mono">{hitList.size}/{totalTargets}</span>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-white border border-zinc-200 rounded-xl shadow-sm p-6">
-                <div className="flex items-center justify-between border-b border-zinc-100 pb-4 mb-6">
-                  <span className="font-label-editorial text-label-editorial text-zinc-900 tracking-wider uppercase">Dampener Calibration</span>
-                  <span className="material-symbols-outlined text-zinc-400">tune</span>
+                <div 
+                  ref={arenaRef}
+                  onMouseMove={onMouseMove}
+                  onMouseLeave={onMouseLeave}
+                  className="relative w-full h-[400px] md:h-[500px] bg-zinc-950 border border-white/5 rounded-xl overflow-hidden cursor-crosshair select-none group shadow-inner"
+                >
+                  <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity duration-300"></canvas>
+                  
+                  {/* Glowing background grid */}
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+
+                  {/* Targets */}
+                  <div className={`target-node absolute left-[20%] top-[20%] p-4 transition-transform duration-200 cursor-pointer ${hitList.has(1) ? 'opacity-20 scale-95' : 'hover:scale-110'}`} onClick={() => hitTarget(1)}>
+                    <div className="w-10 h-10 rounded-full border border-zinc-700 bg-zinc-900/80 flex items-center justify-center relative overflow-hidden group/target">
+                      <div className="absolute inset-0 bg-emerald-500/0 group-hover/target:bg-emerald-500/20 transition-colors"></div>
+                      <span className="w-2.5 h-2.5 rounded-full bg-zinc-400 group-hover/target:bg-emerald-400 group-hover/target:shadow-[0_0_10px_rgba(16,185,129,0.8)] transition-all"></span>
+                    </div>
+                  </div>
+                  
+                  <div className={`target-node absolute left-[50%] top-[15%] p-4 transition-transform duration-200 cursor-pointer ${hitList.has(2) ? 'opacity-20 scale-95' : 'hover:scale-110'}`} onClick={() => hitTarget(2)}>
+                    <div className="w-12 h-12 rounded-full border border-zinc-700 bg-zinc-900/80 flex items-center justify-center relative overflow-hidden group/target">
+                      <div className="absolute inset-0 bg-emerald-500/0 group-hover/target:bg-emerald-500/20 transition-colors"></div>
+                      <div className="w-4 h-4 rounded-full border border-zinc-500 group-hover/target:border-emerald-400 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 group-hover/target:bg-emerald-400 transition-colors"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className={`target-node absolute right-[15%] top-[30%] p-4 transition-transform duration-200 cursor-pointer ${hitList.has(3) ? 'opacity-20 scale-95' : 'hover:scale-110'}`} onClick={() => hitTarget(3)}>
+                    <div className="px-5 py-2 rounded-full border border-zinc-700 bg-zinc-900/80 flex items-center gap-2 group/target overflow-hidden relative">
+                      <div className="absolute inset-0 bg-emerald-500/0 group-hover/target:bg-emerald-500/10 transition-colors"></div>
+                      <span className="w-2 h-2 rounded-full bg-zinc-400 group-hover/target:bg-emerald-400 transition-colors"></span>
+                      <span className="text-xs font-semibold text-zinc-300 group-hover/target:text-white transition-colors">Link</span>
+                    </div>
+                  </div>
+                  
+                  <div className={`target-node absolute left-[30%] bottom-[25%] p-4 transition-transform duration-200 cursor-pointer ${hitList.has(4) ? 'opacity-20 scale-95' : 'hover:scale-110'}`} onClick={() => hitTarget(4)}>
+                    <div className="w-12 h-12 rounded-full border border-zinc-700 bg-zinc-900/80 flex items-center justify-center relative overflow-hidden group/target">
+                      <div className="absolute inset-0 bg-emerald-500/0 group-hover/target:bg-emerald-500/20 transition-colors"></div>
+                      <span className="w-3 h-3 rounded-full bg-zinc-400 group-hover/target:bg-emerald-400 transition-colors"></span>
+                    </div>
+                  </div>
+                  
+                  <div className={`target-node absolute right-[35%] bottom-[20%] p-4 transition-transform duration-200 cursor-pointer ${hitList.has(5) ? 'opacity-20 scale-95' : 'hover:scale-110'}`} onClick={() => hitTarget(5)}>
+                    <div className="px-4 py-2 border border-zinc-700 bg-zinc-900/80 rounded-lg flex items-center gap-3 group/target overflow-hidden relative">
+                      <div className="absolute inset-0 bg-emerald-500/0 group-hover/target:bg-emerald-500/10 transition-colors"></div>
+                      <span className="w-2 h-2 rounded-full bg-zinc-400 group-hover/target:bg-emerald-400 transition-colors"></span>
+                      <span className="text-xs font-medium text-zinc-300 group-hover/target:text-white transition-colors">Select</span>
+                    </div>
+                  </div>
+                  
+                  <div className={`target-node absolute right-[10%] bottom-[40%] p-4 transition-transform duration-200 cursor-pointer ${hitList.has(6) ? 'opacity-20 scale-95' : 'hover:scale-110'}`} onClick={() => hitTarget(6)}>
+                    <div className="w-8 h-8 rounded-full border border-zinc-700 bg-zinc-900/80 flex items-center justify-center relative overflow-hidden group/target">
+                      <div className="absolute inset-0 bg-emerald-500/0 group-hover/target:bg-emerald-500/20 transition-colors"></div>
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 group-hover/target:bg-emerald-400 transition-colors"></span>
+                    </div>
+                  </div>
+
+                  {/* Virtual Cursors */}
+                  <div ref={rawCursorRef} className="custom-cursor-raw absolute w-4 h-4 rounded-full border border-red-500/80 pointer-events-none hidden mix-blend-screen shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                    <div className="w-1 h-1 bg-red-400 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                  </div>
+                  <div ref={dampedCursorRef} className="custom-cursor-damped absolute w-6 h-6 rounded-full border-2 border-emerald-400 pointer-events-none hidden mix-blend-screen shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                    <div className="w-1.5 h-1.5 bg-emerald-300 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                  </div>
                 </div>
-                <div className="space-y-6">
+
+                <div className="grid grid-cols-3 gap-6 pt-2">
                   <div>
-                    <div className="flex justify-between text-zinc-700 font-body-sm text-sm font-medium mb-3">
-                      <span>Involuntary Frequency</span>
-                      <span className="text-blue-600">{tremorFreq.toFixed(1)} Hz</span>
+                    <div className="flex justify-between text-zinc-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      <span>Tremor Hz</span>
+                      <span className="text-white">{tremorFreq.toFixed(1)}</span>
                     </div>
                     <input className="w-full" max="12.0" min="2.0" step="0.2" type="range" value={tremorFreq} onChange={(e) => setTremorFreq(parseFloat(e.target.value))} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-zinc-700 font-body-sm text-sm font-medium mb-3">
-                      <span>Harmonic Inertia</span>
-                      <span className="text-blue-600">{inertiaVal.toFixed(2)}</span>
+                    <div className="flex justify-between text-zinc-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      <span>Dampening</span>
+                      <span className="text-white">{inertiaVal.toFixed(2)}</span>
                     </div>
                     <input className="w-full" max="0.95" min="0.1" step="0.05" type="range" value={inertiaVal} onChange={(e) => setInertiaVal(parseFloat(e.target.value))} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-zinc-700 font-body-sm text-sm font-medium mb-3">
-                      <span>Magnetic Snap Gravity</span>
-                      <span className="text-blue-600">{magnetRadius} px</span>
+                    <div className="flex justify-between text-zinc-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      <span>Magnetic Px</span>
+                      <span className="text-white">{magnetRadius}</span>
                     </div>
                     <input className="w-full" max="60" min="10" step="2" type="range" value={magnetRadius} onChange={(e) => setMagnetRadius(parseInt(e.target.value))} />
                   </div>
@@ -436,118 +430,47 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
           </div>
         </section>
 
-        {/* ── Narrative Section ── */}
-        <section className="w-full px-6 md:px-12 max-w-7xl mx-auto py-24">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-4">
-              <span className="font-headline-md text-headline-md text-blue-600 italic block mb-4">01</span>
-              <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-zinc-900 leading-tight mb-6 font-medium tracking-tight">
-                Where physical effort meets stillness.
+        {/* ── Extension CTA ── */}
+        <section className="w-full px-6 py-32 max-w-7xl mx-auto" id="extension">
+          <div className="w-full rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-white/10 p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[100px] -right-32 -bottom-32"></div>
+            
+            <div className="flex flex-col items-start z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Browser Extension Available</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
+                Universal Stabilization.
               </h2>
-              <p className="font-body-md text-body-md text-zinc-600 mb-8 leading-relaxed">
-                The hand desires intent; physiology injects friction. Stead acts as an invisible mathematical substrate, distinguishing deliberate movement vectors from involuntary oscillation.
+              <p className="text-zinc-400 max-w-lg mb-8">
+                Install the lightweight STEAD extension to apply architectural kinematic damping to every button, link, and input on the web.
               </p>
-              <button onClick={onStart} className="inline-flex items-center gap-3 font-body-md text-[1rem] font-medium text-blue-600 hover:text-blue-700 group transition-colors">
-                <span>Calibrate your cursor now</span>
-                <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </button>
-            </div>
-            <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="bg-white border border-zinc-200 rounded-xl shadow-sm p-8 flex flex-col justify-between hover:shadow-md transition-shadow">
-                <div>
-                  <div className="flex items-center justify-between mb-4 text-zinc-400">
-                    <span className="font-label-editorial text-label-editorial uppercase tracking-wider">Phase I</span>
-                  </div>
-                  <h3 className="font-headline-sm text-headline-sm text-zinc-900 font-medium mb-3">
-                    Predictive Filtering
-                  </h3>
-                  <p className="font-body-sm text-body-sm text-zinc-600 leading-relaxed">
-                    Continuous real-time Fourier analysis identifies high-frequency cyclic tremors, cleanly subtracting them without adding perceived mouse lag or floatiness.
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white border border-zinc-200 rounded-xl shadow-sm p-8 flex flex-col justify-between hover:shadow-md transition-shadow">
-                <div>
-                  <div className="flex items-center justify-between mb-4 text-zinc-400">
-                    <span className="font-label-editorial text-label-editorial uppercase tracking-wider">Phase II</span>
-                  </div>
-                  <h3 className="font-headline-sm text-headline-sm text-zinc-900 font-medium mb-3">
-                    Magnetic Geometry
-                  </h3>
-                  <p className="font-body-sm text-body-sm text-zinc-600 leading-relaxed">
-                    Microscopic interactive targets organically pull the cursor toward their gravitational centers, transforming strenuous fine clicks into effortless, confident actions.
-                  </p>
-                </div>
+              <div className="flex items-center gap-4">
+                <button className="px-6 py-3 rounded-full bg-white text-zinc-950 font-semibold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                  Add to Chrome <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* ── Chrome Extension Invitation ── */}
-        <section className="w-full px-6 md:px-12 max-w-7xl mx-auto pb-32" id="extension">
-          <div className="bg-zinc-900 rounded-2xl p-10 md:p-16 relative overflow-hidden shadow-xl">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
-              <div className="md:col-span-8">
-                <span className="font-label-editorial text-label-editorial text-emerald-400 mb-3 block uppercase tracking-widest">Universal browser integration</span>
-                <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-white leading-tight mb-6 font-medium">
-                  Carry the stillness everywhere.
-                </h2>
-                <p className="font-body-lead text-body-lead text-zinc-300 max-w-2xl">
-                  Install the lightweight Stead browser extension. All web links, application buttons, and form inputs automatically receive architectural kinematic damping.
-                </p>
-              </div>
-              <div className="md:col-span-4 flex flex-col items-start md:items-end justify-center gap-6">
-                <a href="https://github.com/bitbyrizbit/stead" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors w-full sm:w-auto shadow-lg shadow-blue-900/50">
-                  <span className="font-body-md text-white font-medium">Add Stead to Chrome</span>
-                  <span className="material-symbols-outlined text-white text-sm">arrow_outward</span>
-                </a>
-                <div className="flex flex-col items-start md:items-end gap-2 text-caption font-caption text-zinc-400">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-xs text-emerald-400">verified_user</span>
-                    <span>Open-source kernel</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-xs text-emerald-400">shield</span>
-                    <span>Zero data telemetry</span>
-                  </div>
-                </div>
-              </div>
+            
+            <div className="w-full md:w-1/3 aspect-square rounded-2xl bg-zinc-950 border border-white/5 flex items-center justify-center relative shadow-inner z-10 overflow-hidden group">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_100%)]"></div>
+              <Crosshair className="w-16 h-16 text-zinc-800 group-hover:text-emerald-500/50 transition-colors duration-500" />
             </div>
           </div>
         </section>
       </main>
 
       {/* ── Footer ── */}
-      <footer className="w-full bg-white border-t border-zinc-200 mt-auto">
-        <div className="w-full px-6 md:px-12 py-16 max-w-7xl mx-auto flex flex-col justify-between">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
-            <div className="md:col-span-5">
-              <span className="font-headline-md text-headline-md font-medium text-zinc-900">Stead</span>
-              <p className="font-body-sm text-body-sm text-zinc-500 mt-4 max-w-sm leading-relaxed">
-                High-precision algorithmic motor dampening protocols for universal accessibility.
-              </p>
-            </div>
-            <div className="md:col-span-7 grid grid-cols-2 gap-8">
-              <div className="flex flex-col gap-3">
-                <span className="font-label-editorial text-label-editorial text-zinc-900 uppercase tracking-wider mb-2">Project</span>
-                <a className="text-zinc-500 font-body-sm text-sm hover:text-blue-600 transition-colors" href="https://github.com/bitbyrizbit/stead" target="_blank" rel="noreferrer">GitHub Repository</a>
-                <a className="text-zinc-500 font-body-sm text-sm hover:text-blue-600 transition-colors" href="#">Documentation</a>
-                <a className="text-zinc-500 font-body-sm text-sm hover:text-blue-600 transition-colors" href="#">Technical Architecture</a>
-              </div>
-              <div className="flex flex-col gap-3">
-                <span className="font-label-editorial text-label-editorial text-zinc-900 uppercase tracking-wider mb-2">Legal</span>
-                <a className="text-zinc-500 font-body-sm text-sm hover:text-blue-600 transition-colors" href="#">Privacy Policy</a>
-                <a className="text-zinc-500 font-body-sm text-sm hover:text-blue-600 transition-colors" href="#">MIT License</a>
-              </div>
-            </div>
+      <footer className="w-full bg-zinc-950 border-t border-white/5 z-10 relative mt-auto">
+        <div className="w-full px-6 py-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <Crosshair className="w-5 h-5 text-emerald-500" />
+            <span className="font-bold tracking-tight text-white">STEAD</span>
           </div>
-          <div className="w-full h-[1px] bg-zinc-200 mb-8"></div>
-          <div className="flex flex-col sm:flex-row items-center justify-between text-zinc-400 font-caption text-caption gap-4">
-            <span>© {new Date().getFullYear()} Stead Open Source. All rights reserved.</span>
-            <div className="flex items-center gap-6">
-              <span>Open Source Accessibility Initiative</span>
-            </div>
-          </div>
+          <p className="text-xs text-zinc-500 font-medium">
+            © {new Date().getFullYear()} STEAD Open Source. Universal accessibility initiative.
+          </p>
         </div>
       </footer>
     </div>

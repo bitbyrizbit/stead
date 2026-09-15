@@ -137,19 +137,19 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       const pulse = Math.sin(now / 300) * 4;
       ctx.beginPath();
       ctx.arc(targetX, targetY, TARGET_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(37,99,235,0.08)";
+      ctx.fillStyle = "rgba(16,185,129,0.05)";
       ctx.fill();
-      ctx.strokeStyle = "rgba(37,99,235,0.9)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(16,185,129,0.8)";
+      ctx.lineWidth = 1.5;
       ctx.stroke();
       ctx.beginPath();
       ctx.arc(targetX, targetY, TARGET_RADIUS + 6 + pulse, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(37,99,235,0.2)";
+      ctx.strokeStyle = "rgba(16,185,129,0.2)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
       // Crosshair
-      ctx.strokeStyle = "rgba(37,99,235,0.5)";
+      ctx.strokeStyle = "rgba(16,185,129,0.4)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(targetX - 10, targetY); ctx.lineTo(targetX + 10, targetY);
@@ -158,8 +158,8 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
 
       // Cursor dot
       ctx.beginPath();
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(24,24,27,0.85)"; // zinc-900
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.95)"; // white
       ctx.fill();
 
       rafId.current = requestAnimationFrame(tick);
@@ -256,18 +256,18 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
   }, [handleClick]);
 
   return (
-    <div className="absolute inset-0 z-30 bg-zinc-50 flex flex-col items-center justify-center font-sans">
+    <div className="absolute inset-0 z-30 bg-[#09090b] flex flex-col items-center justify-center">
 
       {step === "playing" && (
         <>
           <canvas ref={canvasRef} className="absolute inset-0" style={{ cursor: "none" }} />
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
-            <p className="text-zinc-500 font-label-editorial text-[0.7rem] uppercase tracking-wider">
+            <p className="text-zinc-500 text-[0.7rem] uppercase tracking-wider font-semibold">
               {progress + 1} of {TARGET_POSITIONS_NORM.length} — acquire target
             </p>
-            <div className="w-48 h-1.5 bg-zinc-200 rounded-full overflow-hidden shadow-inner">
+            <div className="w-48 h-1 bg-zinc-800 rounded-full overflow-hidden">
               <div
-                className="h-full bg-blue-600 rounded-full transition-all duration-300"
+                className="h-full bg-emerald-500 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.8)]"
                 style={{ width: `${(progress / TARGET_POSITIONS_NORM.length) * 100}%` }}
               />
             </div>
@@ -276,12 +276,12 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "intro" && (
-        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-white p-8 rounded-2xl shadow-sm border border-zinc-200">
+        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-zinc-900/50 backdrop-blur-md p-8 rounded-2xl border border-white/10 shadow-2xl">
           <div>
-            <h2 className="font-headline-md text-2xl text-zinc-900 tracking-tight mb-3">
+            <h2 className="text-2xl text-white font-semibold tracking-tight mb-3">
               Kinematic Calibration
             </h2>
-            <p className="text-zinc-500 text-sm leading-relaxed font-body-sm">
+            <p className="text-zinc-400 text-sm leading-relaxed">
               Click the 5 circular nodes as they appear across the arena. 
               This 10-second diagnostic establishes your baseline motor profile.
             </p>
@@ -290,13 +290,13 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
           <div className="w-full flex flex-col gap-3">
             <button
               onClick={() => { currentTrajRef.current = []; setStep("playing"); }}
-              className="w-full py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-body-sm font-medium transition-all active:scale-[0.98] shadow-md shadow-blue-900/10"
+              className="w-full py-3.5 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 text-sm font-semibold transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(255,255,255,0.15)]"
             >
-              Initiate diagnostic
+              Initiate Diagnostic
             </button>
             <button
               onClick={onSkip}
-              className="w-full py-2 text-zinc-400 text-sm hover:text-zinc-600 font-body-sm transition-colors"
+              className="w-full py-2 text-zinc-500 text-sm hover:text-white font-medium transition-colors"
             >
               Skip calibration
             </button>
@@ -305,13 +305,13 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "done" && (
-        <div className="flex flex-col items-center gap-6 text-center px-6 bg-white p-10 rounded-2xl shadow-sm border border-zinc-200">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-sm">
-            <span className="material-symbols-outlined text-emerald-600 text-3xl">check</span>
+        <div className="flex flex-col items-center gap-6 text-center px-6 bg-zinc-900/50 backdrop-blur-md p-10 rounded-2xl border border-white/10 shadow-2xl">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
           <div>
-            <p className="text-zinc-900 font-headline-sm text-xl font-medium">Profile Established</p>
-            <p className="text-zinc-500 font-body-sm text-sm mt-2">Configuring algorithmic dampening...</p>
+            <p className="text-white text-xl font-semibold">Profile Established</p>
+            <p className="text-zinc-400 text-sm mt-2">Configuring algorithmic dampening...</p>
           </div>
         </div>
       )}

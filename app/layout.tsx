@@ -31,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-950 text-white overflow-hidden">
+      <body className="min-h-full bg-zinc-950 text-zinc-50 antialiased overflow-hidden">
         {children}
       </body>
     </html>

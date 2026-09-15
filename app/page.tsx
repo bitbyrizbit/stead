@@ -90,11 +90,11 @@ export default function Home() {
   }, [activeTarget]);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-zinc-50 text-zinc-900 font-sans selection:bg-blue-100 selection:text-blue-900 select-none">
+    <main className="relative w-screen h-screen overflow-hidden select-none selection:bg-emerald-500/30 selection:text-emerald-50">
 
       {/* ── Step 1: Landing ── */}
       {step === "landing" && (
-        <div className="absolute inset-0 z-50 overflow-y-auto bg-zinc-50">
+        <div className="absolute inset-0 z-50 overflow-y-auto">
           <EditorialMarketing onStart={() => setStep("calibration")} />
         </div>
       )}
@@ -145,30 +145,30 @@ export default function Home() {
           <div className="absolute top-6 left-6 z-20 flex flex-col gap-3 pointer-events-none">
             {/* Wordmark */}
             <div className="mb-2">
-              <p className="text-zinc-900 font-headline-md text-2xl font-semibold tracking-tight leading-none">STEAD</p>
-              <p className="text-zinc-500 text-xs font-body-sm font-medium mt-1">Universal kinematic dampening.</p>
+              <p className="text-white text-2xl font-semibold tracking-tight leading-none">STEAD</p>
+              <p className="text-zinc-400 text-xs font-medium mt-1">Universal kinematic dampening.</p>
             </div>
 
             {/* Cursor legend */}
             <div className="flex flex-col gap-2 mt-2">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full border-2 border-zinc-400 border-dashed shrink-0" />
-                <span className="text-zinc-600 text-xs font-body-sm font-medium">Unassisted Pathway</span>
+                <span className="w-2.5 h-2.5 rounded-full border-2 border-zinc-500 border-dashed shrink-0" />
+                <span className="text-zinc-300 text-xs font-medium">Unassisted Pathway</span>
               </div>
               {!steadEnabled ? null : (
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="text-zinc-600 text-xs font-body-sm font-medium">Active Filter</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                  <span className="text-zinc-300 text-xs font-medium">Active Filter</span>
                 </div>
               )}
             </div>
 
             {/* Live params */}
-            <div className="mt-3 flex flex-col gap-1 text-[10px] text-zinc-400 font-caption uppercase tracking-wider">
+            <div className="mt-3 flex flex-col gap-1 text-[10px] text-zinc-500 uppercase tracking-wider">
               <span>{frequency} Hz · {amplitude} px tremor</span>
               <span>minCutoff={minCutoff.toFixed(2)} β={beta.toFixed(3)}</span>
               {isPersonalised && (
-                <span className="text-blue-600 mt-1 font-medium">Profile Linked</span>
+                <span className="text-emerald-400 mt-1 font-medium">Profile Linked</span>
               )}
             </div>
           </div>
@@ -179,10 +179,10 @@ export default function Home() {
             <button
               onClick={() => setSteadEnabled(v => !v)}
               className={[
-                "px-6 py-2 rounded-full text-xs font-body-sm font-medium transition-all duration-200 border shadow-sm",
+                "px-6 py-2 rounded-full text-xs font-medium transition-all duration-200 border shadow-sm",
                 steadEnabled
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-emerald-500/10"
-                  : "bg-white border-zinc-200 text-zinc-500",
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                  : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10",
               ].join(" ")}
             >
               STEAD Protocol {steadEnabled ? "ACTIVE" : "DISABLED"}
@@ -192,10 +192,10 @@ export default function Home() {
             <button
               onClick={() => setActiveTarget(v => v === null ? 0 : null)}
               className={[
-                "px-5 py-1.5 rounded-full text-xs font-body-sm font-medium border transition-all duration-200",
+                "px-5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200",
                 activeTarget !== null
-                  ? "bg-blue-50 border-blue-200 text-blue-700 shadow-sm shadow-blue-500/10"
-                  : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 shadow-sm",
+                  ? "bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+                  : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10",
               ].join(" ")}
             >
               {activeTarget !== null ? "Halt diagnostic" : "Run diagnostic"}
@@ -204,7 +204,7 @@ export default function Home() {
             {/* Re-calibrate */}
             <button
               onClick={() => { setStep("calibration"); setActiveTarget(null); }}
-              className="text-[10px] text-blue-600 font-label-editorial uppercase tracking-wider hover:text-blue-800 transition-colors mt-1"
+              className="text-[10px] text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition-colors mt-1"
             >
               Recalibrate
             </button>
@@ -212,8 +212,8 @@ export default function Home() {
             {/* Hit feedback */}
             {lastHit && (
               <span className={[
-                "text-sm font-semibold font-body-sm transition-opacity",
-                lastHit.startsWith("✓") ? "text-emerald-600" : "text-zinc-500",
+                "text-sm font-semibold transition-opacity",
+                lastHit.startsWith("✓") ? "text-emerald-400" : "text-zinc-400",
               ].join(" ")}>
                 {lastHit}
               </span>
@@ -234,10 +234,10 @@ export default function Home() {
             steadOffClicks={steadOffClicks}
           />
 
-          {/* ── Bottom hint (fades when accuracy test is running) ── */}
+          {/* ── Bottom hint ── */}
           {activeTarget === null && (
             <div className="absolute bottom-5 left-0 right-0 flex justify-center z-10 pointer-events-none">
-              <p className="text-[10px] text-slate-700 font-mono">
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
                 Move your mouse · click the buttons below to test accuracy
               </p>
             </div>
