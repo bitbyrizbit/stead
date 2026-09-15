@@ -129,24 +129,50 @@ document.addEventListener("pointermove", (e: PointerEvent) => {
   filteredY = clamped.y;
 }, { capture: true, passive: true });
 
+// Track last programmatic click to prevent involuntary double-clicks (tremor twitch)
+let lastClickTime = 0;
+let lastClickTarget: Element | null = null;
+
+// Helper to pierce Shadow DOM (e.g. for web components)
+function getDeepElementFromPoint(x: number, y: number): Element | null {
+  let el = document.elementFromPoint(x, y);
+  while (el && el.shadowRoot) {
+    const shadowEl = el.shadowRoot.elementFromPoint(x, y);
+    if (!shadowEl || shadowEl === el) break;
+    el = shadowEl;
+  }
+  return el;
+}
+
 // Intercept click — redirect to filtered position element
 document.addEventListener("click", (e: MouseEvent) => {
-  if (!enabled) return;
+  if (!enabled || !e.isTrusted) return; // Only intercept genuine, physical user clicks
 
   const dx = filteredX - e.clientX;
   const dy = filteredY - e.clientY;
   const drift = Math.hypot(dx, dy);
 
-  // Only redirect if there is meaningful drift
+  // Only redirect if there is meaningful drift (user intended to click where the filtered cursor is)
   if (drift < 3) return;
 
-  // Find element at filtered position
-  const target = document.elementFromPoint(filteredX, filteredY);
+  // Find element at filtered position, piercing Shadow DOM
+  const target = getDeepElementFromPoint(filteredX, filteredY);
   if (!target || target === e.target) return;
+
+  // Anti-twitch debounce: prevent accidental double-clicks on the same target within 300ms
+  const now = performance.now();
+  if (target === lastClickTarget && now - lastClickTime < 300) {
+    e.stopPropagation();
+    e.preventDefault();
+    return; // Ignore this twitch
+  }
 
   // Prevent original click and re-dispatch at filtered position
   e.stopPropagation();
   e.preventDefault();
+
+  lastClickTime = now;
+  lastClickTarget = target;
 
   // Use native .click() to ensure the event is treated as trusted by the browser.
   // Manually dispatched MouseEvents have isTrusted: false, which breaks on many modern sites.

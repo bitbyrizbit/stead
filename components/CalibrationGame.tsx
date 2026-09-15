@@ -24,6 +24,7 @@ import {
   getPresetParams,
   type PresetKey,
 } from "@/lib/sensitivityPresets";
+import { detectInputType, type InputType } from "@/lib/inputDetection";
 import { estimateSPIFromDeviation, type SPIResult } from "@/lib/steadPrecisionIndex";
 import { TremorInjector } from "@/lib/tremorInjector";
 
@@ -63,6 +64,7 @@ export interface CalibrationOutput {
   presetKey: PresetKey;
   spiBeforeStead: SPIResult;
   clickTimesMs: number[];
+  inputType: InputType;
 }
 
 export interface CalibrationGameProps {
@@ -82,6 +84,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
   const clickTimesRef = useRef<number[]>([]);
   const targetStartTimeRef = useRef<number>(0);
   const rawPos = useRef({ x: 0, y: 0 });
+  const inputTypeRef = useRef<InputType>("mouse");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafId = useRef<number | null>(null);
 
@@ -100,6 +103,10 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
 
   const onPointerMove = useCallback((e: PointerEvent) => {
     rawPos.current = { x: e.clientX, y: e.clientY };
+    if (inputTypeRef.current === "mouse") {
+      const detected = detectInputType(e);
+      if (detected !== "mouse") inputTypeRef.current = detected;
+    }
   }, []);
 
   useEffect(() => {
@@ -186,7 +193,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       const avgClickTime = clickTimesRef.current.reduce((a, b) => a + b, 0) / clickTimesRef.current.length;
 
       const presetKey = deviationToPreset(avgDev);
-      const presetParams = getPresetParams(presetKey);
+      const presetParams = getPresetParams(presetKey, inputTypeRef.current);
 
       // Override calibration params with the snapped preset
       const snappedCalibration: CalibrationResult = {
@@ -204,6 +211,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
         presetKey,
         spiBeforeStead,
         clickTimesMs: clickTimesRef.current,
+        inputType: inputTypeRef.current,
       }), 800);
 
     } else {
@@ -225,7 +233,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       const elapsed = performance.now() - targetStartTimeRef.current;
       if (elapsed > 10000) { // 10 seconds timeout
         setStep("done");
-        const presetParams = getPresetParams("strong");
+        const presetParams = getPresetParams("strong", inputTypeRef.current);
         const fallbackCalibration = { minCutoff: presetParams.minCutoff, beta: presetParams.beta, avgDeviation: 20 };
         const spiBeforeStead = estimateSPIFromDeviation(20, 10000);
         
@@ -235,6 +243,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
           presetKey: "strong",
           spiBeforeStead,
           clickTimesMs: [10000, 10000, 10000, 10000, 10000],
+          inputType: inputTypeRef.current,
         }), 800);
       }
     }, 1000);

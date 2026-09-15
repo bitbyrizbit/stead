@@ -62,6 +62,7 @@ export function ComparisonCanvas({
   const filterX = useRef(new OneEuroFilter(minCutoff, beta));
   const filterY = useRef(new OneEuroFilter(minCutoff, beta));
   const trajectoryRef = useRef<Point[]>([]);
+  const lastClickRef = useRef<{ index: number; time: number }>({ index: -1, time: 0 });
   const rawModeRef = useRef(rawMode);
 
   // Sync params
@@ -85,7 +86,16 @@ export function ComparisonCanvas({
     const rects = layer.getRects();
     const traj = trajectoryRef.current;
     const predicted = predictTarget(traj, rects, 10);
-    if (predicted !== -1) layer.click(predicted);
+    
+    if (predicted !== -1) {
+      const now = performance.now();
+      // Anti-twitch debounce: prevent accidental double-clicks on the same target within 300ms
+      if (lastClickRef.current.index === predicted && now - lastClickRef.current.time < 300) {
+        return; // Ignore twitch re-click
+      }
+      layer.click(predicted);
+      lastClickRef.current = { index: predicted, time: now };
+    }
     
     // Compute deviation for SPI scoring
     const deviationPx = measureTrajectoryDeviation(traj);
