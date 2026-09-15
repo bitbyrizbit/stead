@@ -13,7 +13,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { MarketingScreen } from "@/components/MarketingScreen";
+import { EditorialMarketing } from "@/components/EditorialMarketing";
 import { CalibrationGame, type CalibrationOutput } from "@/components/CalibrationGame";
 import { SPIResultsScreen } from "@/components/SPIResultsScreen";
 import { ComparisonCanvas } from "@/components/ComparisonCanvas";
@@ -94,8 +94,8 @@ export default function Home() {
 
       {/* ── Step 1: Landing ── */}
       {step === "landing" && (
-        <div className="absolute inset-0 z-50 overflow-y-auto bg-slate-950">
-          <MarketingScreen onStart={() => setStep("calibration")} />
+        <div className="absolute inset-0 z-50 overflow-y-auto bg-[#121317]">
+          <EditorialMarketing onStart={() => setStep("calibration")} />
         </div>
       )}
 
