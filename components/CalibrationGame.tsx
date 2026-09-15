@@ -137,19 +137,19 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       const pulse = Math.sin(now / 300) * 4;
       ctx.beginPath();
       ctx.arc(targetX, targetY, TARGET_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(34,197,94,0.18)";
+      ctx.fillStyle = "rgba(37,99,235,0.08)";
       ctx.fill();
-      ctx.strokeStyle = "rgba(34,197,94,0.9)";
+      ctx.strokeStyle = "rgba(37,99,235,0.9)";
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.beginPath();
       ctx.arc(targetX, targetY, TARGET_RADIUS + 6 + pulse, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(34,197,94,0.25)";
+      ctx.strokeStyle = "rgba(37,99,235,0.2)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
       // Crosshair
-      ctx.strokeStyle = "rgba(34,197,94,0.6)";
+      ctx.strokeStyle = "rgba(37,99,235,0.5)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(targetX - 10, targetY); ctx.lineTo(targetX + 10, targetY);
@@ -159,7 +159,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       // Cursor dot
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(239,68,68,0.85)";
+      ctx.fillStyle = "rgba(24,24,27,0.85)"; // zinc-900
       ctx.fill();
 
       rafId.current = requestAnimationFrame(tick);
@@ -256,18 +256,18 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
   }, [handleClick]);
 
   return (
-    <div className="absolute inset-0 z-30 bg-slate-950 flex flex-col items-center justify-center">
+    <div className="absolute inset-0 z-30 bg-zinc-50 flex flex-col items-center justify-center font-sans">
 
       {step === "playing" && (
         <>
           <canvas ref={canvasRef} className="absolute inset-0" style={{ cursor: "none" }} />
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-            <p className="text-slate-400 text-xs font-mono">
-              {progress + 1} of {TARGET_POSITIONS_NORM.length} — click the circle
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
+            <p className="text-zinc-500 font-label-editorial text-[0.7rem] uppercase tracking-wider">
+              {progress + 1} of {TARGET_POSITIONS_NORM.length} — acquire target
             </p>
-            <div className="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-48 h-1.5 bg-zinc-200 rounded-full overflow-hidden shadow-inner">
               <div
-                className="h-full bg-green-400 rounded-full transition-all duration-300"
+                className="h-full bg-blue-600 rounded-full transition-all duration-300"
                 style={{ width: `${(progress / TARGET_POSITIONS_NORM.length) * 100}%` }}
               />
             </div>
@@ -276,42 +276,42 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "intro" && (
-        <div className="flex flex-col items-center gap-7 text-center max-w-sm px-6">
+        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-white p-8 rounded-2xl shadow-sm border border-zinc-200">
           <div>
-            <p className="text-2xl font-bold text-white tracking-tight mb-2">
-              Let&apos;s see how you move
-            </p>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              Click 5 circles as they appear around the screen.
-              Takes about 10 seconds — no right or wrong answer.
+            <h2 className="font-headline-md text-2xl text-zinc-900 tracking-tight mb-3">
+              Kinematic Calibration
+            </h2>
+            <p className="text-zinc-500 text-sm leading-relaxed font-body-sm">
+              Click the 5 circular nodes as they appear across the arena. 
+              This 10-second diagnostic establishes your baseline motor profile.
             </p>
           </div>
 
-          <div className="w-full flex flex-col gap-2.5">
+          <div className="w-full flex flex-col gap-3">
             <button
               onClick={() => { currentTrajRef.current = []; setStep("playing"); }}
-              className="w-full py-3 rounded-lg bg-green-400 hover:bg-green-300 text-slate-950 text-sm font-semibold transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(74,222,128,0.2)]"
+              className="w-full py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-body-sm font-medium transition-all active:scale-[0.98] shadow-md shadow-blue-900/10"
             >
-              Get started
+              Initiate diagnostic
             </button>
             <button
               onClick={onSkip}
-              className="w-full py-2 text-slate-600 text-xs hover:text-slate-400 transition-colors"
+              className="w-full py-2 text-zinc-400 text-sm hover:text-zinc-600 font-body-sm transition-colors"
             >
-              Skip for now
+              Skip calibration
             </button>
           </div>
         </div>
       )}
 
       {step === "done" && (
-        <div className="flex flex-col items-center gap-5 text-center px-6">
-          <div className="w-14 h-14 rounded-full bg-green-400/15 border border-green-400/40 flex items-center justify-center">
-            <span className="text-green-400 text-2xl">✓</span>
+        <div className="flex flex-col items-center gap-6 text-center px-6 bg-white p-10 rounded-2xl shadow-sm border border-zinc-200">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined text-emerald-600 text-3xl">check</span>
           </div>
           <div>
-            <p className="text-white font-semibold text-lg">Got it</p>
-            <p className="text-slate-400 text-sm mt-1">Setting things up for you…</p>
+            <p className="text-zinc-900 font-headline-sm text-xl font-medium">Profile Established</p>
+            <p className="text-zinc-500 font-body-sm text-sm mt-2">Configuring algorithmic dampening...</p>
           </div>
         </div>
       )}

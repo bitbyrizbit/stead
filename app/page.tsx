@@ -90,11 +90,11 @@ export default function Home() {
   }, [activeTarget]);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden select-none">
+    <main className="relative w-screen h-screen overflow-hidden bg-zinc-50 text-zinc-900 font-sans selection:bg-blue-100 selection:text-blue-900 select-none">
 
       {/* ── Step 1: Landing ── */}
       {step === "landing" && (
-        <div className="absolute inset-0 z-50 overflow-y-auto bg-[#121317]">
+        <div className="absolute inset-0 z-50 overflow-y-auto bg-zinc-50">
           <EditorialMarketing onStart={() => setStep("calibration")} />
         </div>
       )}
@@ -136,84 +136,84 @@ export default function Home() {
             ref={targetLayerRef}
             activeTarget={activeTarget}
             onHit={(label, byPredictor) => {
-              setLastHit(byPredictor ? `→ ${label}` : label);
+              setLastHit(byPredictor ? `✓ ${label}` : label);
               setTimeout(() => setLastHit(null), 700);
             }}
           />
 
           {/* ── Legend (top-left) ── */}
-          <div className="absolute top-5 left-5 z-20 flex flex-col gap-2 pointer-events-none">
+          <div className="absolute top-6 left-6 z-20 flex flex-col gap-3 pointer-events-none">
             {/* Wordmark */}
-            <div className="mb-1">
-              <p className="text-white font-bold text-xl tracking-tighter leading-none">STEAD</p>
-              <p className="text-slate-600 text-[11px] font-mono mt-0.5">Your intent, not your tremor.</p>
+            <div className="mb-2">
+              <p className="text-zinc-900 font-headline-md text-2xl font-semibold tracking-tight leading-none">STEAD</p>
+              <p className="text-zinc-500 text-xs font-body-sm font-medium mt-1">Universal kinematic dampening.</p>
             </div>
 
             {/* Cursor legend */}
-            <div className="flex flex-col gap-1.5 mt-1">
+            <div className="flex flex-col gap-2 mt-2">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
-                <span className="text-slate-400 text-xs font-mono">Raw + tremor</span>
+                <span className="w-2.5 h-2.5 rounded-full border-2 border-zinc-400 border-dashed shrink-0" />
+                <span className="text-zinc-600 text-xs font-body-sm font-medium">Unassisted Pathway</span>
               </div>
               {!steadEnabled ? null : (
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-400 shrink-0" />
-                  <span className="text-slate-400 text-xs font-mono">STEAD filtered</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="text-zinc-600 text-xs font-body-sm font-medium">Active Filter</span>
                 </div>
               )}
             </div>
 
             {/* Live params */}
-            <div className="mt-2 flex flex-col gap-0.5 text-[10px] text-slate-700 font-mono">
+            <div className="mt-3 flex flex-col gap-1 text-[10px] text-zinc-400 font-caption uppercase tracking-wider">
               <span>{frequency} Hz · {amplitude} px tremor</span>
               <span>minCutoff={minCutoff.toFixed(2)} β={beta.toFixed(3)}</span>
               {isPersonalised && (
-                <span className="text-green-700 mt-0.5">✓ personalised profile</span>
+                <span className="text-blue-600 mt-1 font-medium">Profile Linked</span>
               )}
             </div>
           </div>
 
           {/* ── Top-centre controls ── */}
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
             {/* STEAD toggle */}
             <button
               onClick={() => setSteadEnabled(v => !v)}
               className={[
-                "px-5 py-1.5 rounded-full text-xs font-semibold font-mono border transition-all duration-200",
+                "px-6 py-2 rounded-full text-xs font-body-sm font-medium transition-all duration-200 border shadow-sm",
                 steadEnabled
-                  ? "bg-green-400/10 border-green-400/60 text-green-300 shadow-[0_0_12px_rgba(74,222,128,0.15)]"
-                  : "bg-slate-800/80 border-slate-700 text-slate-500",
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-emerald-500/10"
+                  : "bg-white border-zinc-200 text-zinc-500",
               ].join(" ")}
             >
-              STEAD {steadEnabled ? "ON" : "OFF (Reset to raw)"}
+              STEAD Protocol {steadEnabled ? "ACTIVE" : "DISABLED"}
             </button>
 
             {/* Accuracy test toggle */}
             <button
               onClick={() => setActiveTarget(v => v === null ? 0 : null)}
               className={[
-                "px-4 py-1 rounded-full text-[11px] font-mono border transition-all duration-200",
+                "px-5 py-1.5 rounded-full text-xs font-body-sm font-medium border transition-all duration-200",
                 activeTarget !== null
-                  ? "bg-blue-500/10 border-blue-500/50 text-blue-400"
-                  : "bg-slate-900/60 border-slate-800 text-slate-600 hover:text-slate-400",
+                  ? "bg-blue-50 border-blue-200 text-blue-700 shadow-sm shadow-blue-500/10"
+                  : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 shadow-sm",
               ].join(" ")}
             >
-              {activeTarget !== null ? "Stop test" : "Accuracy test"}
+              {activeTarget !== null ? "Halt diagnostic" : "Run diagnostic"}
             </button>
 
             {/* Re-calibrate */}
             <button
               onClick={() => { setStep("calibration"); setActiveTarget(null); }}
-              className="text-[10px] text-slate-700 font-mono hover:text-slate-400 transition-colors"
+              className="text-[10px] text-blue-600 font-label-editorial uppercase tracking-wider hover:text-blue-800 transition-colors mt-1"
             >
-              re-calibrate
+              Recalibrate
             </button>
 
             {/* Hit feedback */}
             {lastHit && (
               <span className={[
-                "text-sm font-bold font-mono transition-opacity",
-                lastHit.startsWith("✓") || lastHit.startsWith("→") ? "text-green-400" : "text-red-400",
+                "text-sm font-semibold font-body-sm transition-opacity",
+                lastHit.startsWith("✓") ? "text-emerald-600" : "text-zinc-500",
               ].join(" ")}>
                 {lastHit}
               </span>

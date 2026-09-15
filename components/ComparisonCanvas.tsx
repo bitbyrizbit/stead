@@ -136,7 +136,7 @@ export function ComparisonCanvas({
 
       if (rawModeRef.current) {
         // Raw mode: show only the tremor cursor, no green dot
-        drawDot(ctx, tx, ty, "rgba(239, 68, 68, 0.9)", "Raw");
+        drawDot(ctx, tx, ty, "rgba(161, 161, 170, 0.9)", "Raw");
         filteredPos.current = { x: tx, y: ty };
       } else {
         // Normal mode: filter + safety clamp
@@ -149,8 +149,8 @@ export function ComparisonCanvas({
         buf.push({ x: clamped.x, y: clamped.y, t: now });
         if (buf.length > TRAJECTORY_BUFFER_SIZE) buf.shift();
 
-        drawDot(ctx, tx, ty, "rgba(239, 68, 68, 0.9)", "Raw");
-        drawDot(ctx, clamped.x, clamped.y, "rgba(34, 197, 94, 0.95)", "STEAD");
+        drawDot(ctx, tx, ty, "rgba(161, 161, 170, 0.9)", "Raw"); // zinc-400
+        drawDot(ctx, clamped.x, clamped.y, "rgba(5, 150, 105, 0.95)", "STEAD"); // emerald-600
       }
 
       rafId = requestAnimationFrame(draw);
