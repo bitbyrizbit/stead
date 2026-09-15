@@ -217,6 +217,30 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
     if (step === "playing") targetStartTimeRef.current = performance.now();
   }, [targetIdx, step]);
 
+  // Fallback timeout: If a user struggles for >10s on one target, they have severe tremor.
+  // Don't leave them trapped. Auto-complete with the Strong preset.
+  useEffect(() => {
+    if (step !== "playing") return;
+    const interval = setInterval(() => {
+      const elapsed = performance.now() - targetStartTimeRef.current;
+      if (elapsed > 10000) { // 10 seconds timeout
+        setStep("done");
+        const presetParams = getPresetParams("strong");
+        const fallbackCalibration = { minCutoff: presetParams.minCutoff, beta: presetParams.beta, avgDeviation: 20 };
+        const spiBeforeStead = estimateSPIFromDeviation(20, 10000);
+        
+        persistCalibration(sessionId.current, fallbackCalibration);
+        setTimeout(() => onComplete({
+          calibration: fallbackCalibration,
+          presetKey: "strong",
+          spiBeforeStead,
+          clickTimesMs: [10000, 10000, 10000, 10000, 10000],
+        }), 800);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [step, onComplete]);
+
   useEffect(() => {
     window.addEventListener("click", handleClick);
     return () => window.removeEventListener("click", handleClick);

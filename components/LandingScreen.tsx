@@ -42,7 +42,7 @@ export function LandingScreen({ onStart }: LandingScreenProps) {
       <div className="relative flex flex-col items-center text-center max-w-lg gap-6">
 
         {/* Status chip */}
-        <div className="animate-fade-up flex items-center gap-2 px-3 py-1 rounded-full border border-slate-800 bg-slate-900/60 text-xs text-slate-500 font-mono">
+        <div className="animate-fade-up flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 bg-slate-900/60 text-xs text-slate-400 font-mono">
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse-dot" />
           Real-time · Browser-based · Free
         </div>
@@ -52,14 +52,14 @@ export function LandingScreen({ onStart }: LandingScreenProps) {
           <h1 className="text-7xl font-bold tracking-tighter text-white leading-none">
             STEAD
           </h1>
-          <p className="text-slate-400 text-lg font-light tracking-wide">
+          <p className="text-slate-300 text-lg font-light tracking-wide">
             Your intent, not your tremor.
           </p>
         </div>
 
         {/* Problem statement — one sentence, no jargon */}
-        <p className="animate-fade-up-delay-2 text-slate-500 text-sm leading-relaxed max-w-sm">
-          Over <span className="text-slate-300">10 million people</span> with Parkinson's,
+        <p className="animate-fade-up-delay-2 text-slate-400 text-sm leading-relaxed max-w-sm">
+          Over <span className="text-slate-200 font-medium">10 million people</span> with Parkinson's,
           essential tremor, or post-stroke motor impairment fight their own cursor every day.
           STEAD filters the shake in real time — personalised to you, no hardware required.
         </p>
@@ -72,26 +72,26 @@ export function LandingScreen({ onStart }: LandingScreenProps) {
           >
             Start — takes 15 seconds
           </button>
-          <p className="text-slate-600 text-xs font-mono">
+          <p className="text-slate-500 text-xs font-mono">
             Quick calibration, then live demo
           </p>
         </div>
 
         {/* How it works — 3 steps inline */}
-        <div className="animate-fade-up-delay-2 flex items-center gap-3 text-xs text-slate-600 font-mono mt-2">
-          <span className="text-slate-500">Calibrate</span>
-          <span className="text-slate-800">→</span>
-          <span className="text-slate-500">Filter</span>
-          <span className="text-slate-800">→</span>
-          <span className="text-slate-500">Click accurately</span>
+        <div className="animate-fade-up-delay-2 flex items-center gap-3 text-xs text-slate-400 font-mono mt-2">
+          <span>Calibrate</span>
+          <span className="text-slate-600">→</span>
+          <span>Filter</span>
+          <span className="text-slate-600">→</span>
+          <span>Click accurately</span>
         </div>
       </div>
 
       {/* Footer — algorithm citation */}
       <div className="absolute bottom-6 left-0 right-0 flex justify-center">
-        <p className="text-[11px] text-slate-700 font-mono text-center px-4">
+        <p className="text-[11px] text-slate-500 font-mono text-center px-4">
           Powered by the One Euro Filter · Casiez, Roussel &amp; Vogel (2012) ·{" "}
-          <span className="text-slate-600">MIT Licensed</span>
+          <span className="text-slate-400">MIT Licensed</span>
         </p>
       </div>
     </div>

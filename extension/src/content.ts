@@ -148,11 +148,17 @@ document.addEventListener("click", (e: MouseEvent) => {
   e.stopPropagation();
   e.preventDefault();
 
-  const correctedClick = new MouseEvent("click", {
-    bubbles: true,
-    cancelable: true,
-    clientX: filteredX,
-    clientY: filteredY,
-  });
-  target.dispatchEvent(correctedClick);
+  // Use native .click() to ensure the event is treated as trusted by the browser.
+  // Manually dispatched MouseEvents have isTrusted: false, which breaks on many modern sites.
+  if (target instanceof HTMLElement || target instanceof SVGElement) {
+    target.click();
+  } else {
+    const correctedClick = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      clientX: filteredX,
+      clientY: filteredY,
+    });
+    target.dispatchEvent(correctedClick);
+  }
 }, { capture: true });

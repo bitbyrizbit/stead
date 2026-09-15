@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node -e \"const fs = require('fs'); fs.renameSync('dist/content.global.js', 'dist/content.js'); fs.renameSync('dist/popup.global.js', 'dist/popup.js');\"",
     "dev": "tsup --watch"
   },
   "devDependencies": {
