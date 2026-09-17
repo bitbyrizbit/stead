@@ -12,8 +12,8 @@ export function AccuracyBoard({ steadOnClicks, steadOffClicks }: AccuracyBoardPr
   const spiOff = computeSPI(steadOffClicks);
 
   return (
-    <div className="absolute bottom-6 right-6 z-20 rounded-xl bg-zinc-900/50 backdrop-blur-md border border-white/10 p-5 min-w-[260px] shadow-2xl">
-      <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-4 border-b border-white/10 pb-2">
+    <div className="absolute bottom-6 right-6 z-20 rounded-sm bg-paper-warm border border-line p-5 min-w-[260px] shadow-sm">
+      <p className="text-[10px] font-mono font-medium text-ink uppercase tracking-[0.2em] mb-4 border-b border-line pb-2">
         Observation Ledger
       </p>
 
@@ -21,15 +21,15 @@ export function AccuracyBoard({ steadOnClicks, steadOffClicks }: AccuracyBoardPr
         {/* STEAD off */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full border-2 border-zinc-500 border-dashed shrink-0" />
-            <span className="text-xs text-zinc-300 font-medium">Unassisted</span>
+            <span className="w-2 h-2 rounded-full border border-amber border-dashed shrink-0" />
+            <span className="text-[11px] text-ink-soft font-mono uppercase tracking-[0.1em]">Unassisted</span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-base font-semibold text-zinc-300 tabular-nums leading-none">
+            <span className="text-base font-semibold text-ink tnum leading-none">
               {spiOff.clicks > 0 ? spiOff.score : "—"}
             </span>
             {spiOff.clicks > 0 && (
-              <span className="text-[10px] text-zinc-500 mt-1 font-medium">
+              <span className="text-[10px] text-ink-muted mt-1 font-medium tnum">
                 {Math.round(spiOff.hitRate * 100)}% accuracy
               </span>
             )}
@@ -39,15 +39,15 @@ export function AccuracyBoard({ steadOnClicks, steadOffClicks }: AccuracyBoardPr
         {/* STEAD on */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-            <span className="text-xs text-zinc-300 font-medium">Active Filter</span>
+            <span className="w-2 h-2 rounded-full bg-teal shrink-0" />
+            <span className="text-[11px] text-ink-soft font-mono uppercase tracking-[0.1em]">Active Filter</span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-base font-semibold text-emerald-400 tabular-nums leading-none">
+            <span className="text-base font-semibold text-teal tnum leading-none">
               {spiOn.clicks > 0 ? spiOn.score : "—"}
             </span>
             {spiOn.clicks > 0 && (
-              <span className="text-[10px] text-emerald-500/70 mt-1 font-medium">
+              <span className="text-[10px] text-teal-soft mt-1 font-medium tnum">
                 {Math.round(spiOn.hitRate * 100)}% accuracy
               </span>
             )}
@@ -57,8 +57,8 @@ export function AccuracyBoard({ steadOnClicks, steadOffClicks }: AccuracyBoardPr
 
       {/* Totals */}
       {(steadOnClicks.length > 0 || steadOffClicks.length > 0) && (
-        <p className="text-[10px] text-zinc-500 mt-4 text-right pt-2 border-t border-white/10 uppercase tracking-wider font-semibold">
-          {steadOffClicks.length} unassisted · {steadOnClicks.length} active (clicks)
+        <p className="text-[10px] text-ink-muted mt-4 text-right pt-2 border-t border-line font-mono uppercase tracking-[0.15em]">
+          {steadOffClicks.length} unassisted · {steadOnClicks.length} active
         </p>
       )}
     </div>

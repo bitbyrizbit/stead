@@ -262,12 +262,12 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
         <>
           <canvas ref={canvasRef} className="absolute inset-0" style={{ cursor: "none" }} />
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
-            <p className="text-zinc-500 text-[0.7rem] uppercase tracking-wider font-semibold">
+            <p className="text-ink-muted text-[10px] font-mono uppercase tracking-[0.2em] font-medium">
               {progress + 1} of {TARGET_POSITIONS_NORM.length} — acquire target
             </p>
-            <div className="w-48 h-1 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="w-48 h-1 bg-paper-dim rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.8)]"
+                className="h-full bg-teal transition-all duration-300"
                 style={{ width: `${(progress / TARGET_POSITIONS_NORM.length) * 100}%` }}
               />
             </div>
@@ -276,12 +276,12 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "intro" && (
-        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-zinc-900/50 backdrop-blur-md p-8 rounded-2xl border border-white/10 shadow-2xl">
+        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-paper p-10 rounded-sm border border-line shadow-sm">
           <div>
-            <h2 className="text-2xl text-white font-semibold tracking-tight mb-3">
+            <h2 className="text-2xl text-ink font-serif tracking-tighter mb-3">
               Kinematic Calibration
             </h2>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <p className="text-ink-soft text-sm leading-relaxed">
               Click the 5 circular nodes as they appear across the arena. 
               This 10-second diagnostic establishes your baseline motor profile.
             </p>
@@ -290,13 +290,14 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
           <div className="w-full flex flex-col gap-3">
             <button
               onClick={() => { currentTrajRef.current = []; setStep("playing"); }}
-              className="w-full py-3.5 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 text-sm font-semibold transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+              className="group relative w-full py-3 bg-ink text-paper text-sm font-medium rounded-sm overflow-hidden"
             >
-              Initiate Diagnostic
+              <span className="relative z-10">Initiate Diagnostic</span>
+              <span className="absolute inset-0 bg-teal translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
             </button>
             <button
               onClick={onSkip}
-              className="w-full py-2 text-zinc-500 text-sm hover:text-white font-medium transition-colors"
+              className="w-full py-2 text-ink-muted text-sm hover:text-ink font-medium transition-colors"
             >
               Skip calibration
             </button>
@@ -305,13 +306,13 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "done" && (
-        <div className="flex flex-col items-center gap-6 text-center px-6 bg-zinc-900/50 backdrop-blur-md p-10 rounded-2xl border border-white/10 shadow-2xl">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div className="flex flex-col items-center gap-6 text-center px-6 bg-paper p-10 rounded-sm border border-line shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-teal-pale border border-teal flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
           <div>
-            <p className="text-white text-xl font-semibold">Profile Established</p>
-            <p className="text-zinc-400 text-sm mt-2">Configuring algorithmic dampening...</p>
+            <p className="text-ink font-serif tracking-tighter text-2xl">Profile Established</p>
+            <p className="text-ink-soft text-sm mt-2">Configuring algorithmic dampening...</p>
           </div>
         </div>
       )}

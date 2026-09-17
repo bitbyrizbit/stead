@@ -2,7 +2,7 @@
 
 import type { PresetKey } from "@/lib/sensitivityPresets";
 import type { SPIResult } from "@/lib/steadPrecisionIndex";
-import { ArrowRight } from "lucide-react";
+import { Activity } from "lucide-react";
 
 interface SPIResultsScreenProps {
   presetKey: PresetKey;
@@ -10,82 +10,54 @@ interface SPIResultsScreenProps {
   onContinue: () => void;
 }
 
-const PRESET_DESCRIPTIONS: Record<PresetKey, string> = {
-  light:  "Light dampening profile assigned",
-  medium: "Medium dampening profile assigned",
-  strong: "Strong dampening profile assigned",
-};
-
-const PRESET_DETAIL: Record<PresetKey, string> = {
-  light:  "Mild kinematic correction",
-  medium: "Balanced kinematic correction",
-  strong: "Significant kinematic correction",
-};
-
-function StatBox({ label, value, sub, accent = false }: {
-  label: string; value: string; sub?: string; accent?: boolean;
-}) {
-  return (
-    <div className={[
-      "flex flex-col items-center justify-center gap-1 px-4 py-6 rounded-xl border bg-zinc-900/50 backdrop-blur-md transition-all",
-      accent
-        ? "border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-        : "border-white/10",
-    ].join(" ")}>
-      <span className={["text-3xl font-bold tracking-tight", accent ? "text-emerald-400" : "text-white"].join(" ")}>
-        {value}
-      </span>
-      <span className="text-xs text-zinc-400 font-medium uppercase tracking-wider text-center">{label}</span>
-      {sub && <span className="text-[10px] text-zinc-500 text-center">{sub}</span>}
-    </div>
-  );
-}
-
 export function SPIResultsScreen({ presetKey, spiBeforeStead, onContinue }: SPIResultsScreenProps) {
   const hitPct = Math.round(spiBeforeStead.hitRate * 100);
-  const dev    = spiBeforeStead.avgDeviationPx.toFixed(1);
-  const spiScore = spiBeforeStead.score;
 
   return (
-    <div className="absolute inset-0 z-30 bg-[#09090b] flex flex-col items-center justify-center px-6 gap-10 font-sans">
-
-      {/* Preset announcement */}
-      <div className="text-center animate-fade-up">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-          <span className="text-xs text-emerald-400 font-semibold uppercase tracking-widest">
-            Profile Active
-          </span>
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-paper selection:bg-teal selection:text-paper cursor-none">
+      <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-paper p-10 rounded-sm border border-line shadow-sm cursor-none">
+        
+        {/* Icon & Title */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-teal-pale border border-teal flex items-center justify-center">
+            <Activity className="w-8 h-8 text-teal" />
+          </div>
+          <div>
+            <h2 className="text-2xl text-ink font-serif tracking-tighter mb-1">
+              Diagnostic Complete
+            </h2>
+            <p className="text-ink-soft text-sm">
+              Your kinematic profile has been analysed.
+            </p>
+          </div>
         </div>
-        <h2 className="text-3xl text-white tracking-tight font-bold">
-          {PRESET_DESCRIPTIONS[presetKey]}
-        </h2>
-        <p className="text-zinc-400 text-sm mt-2">{PRESET_DETAIL[presetKey]}</p>
-      </div>
 
-      {/* SPI before STEAD */}
-      <div className="animate-fade-up-delay w-full max-w-md">
-        <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-widest text-center mb-4">
-          Unassisted Kinematic Baseline
-        </p>
-        <div className="grid grid-cols-3 gap-4">
-          <StatBox label="Est. accuracy" value={`${hitPct}%`} />
-          <StatBox label="Avg variance" value={`${dev}px`} />
-          <StatBox label="SPI score" value={`${spiScore}`} sub="Baseline metric" accent />
+        {/* Stats */}
+        <div className="w-full flex justify-around border-y border-line py-6 my-2">
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-mono text-ink-muted uppercase tracking-[0.2em] mb-1">Raw Accuracy</span>
+            <span className="text-2xl text-ink font-mono tnum">
+              {hitPct}%
+            </span>
+          </div>
+          <div className="flex flex-col items-center border-l border-line pl-8">
+            <span className="text-[10px] font-mono text-ink-muted uppercase tracking-[0.2em] mb-1">Profile</span>
+            <span className="text-2xl text-teal font-mono tnum">
+              {presetKey.toUpperCase()}
+            </span>
+          </div>
         </div>
-        <p className="text-[11px] text-zinc-500 text-center mt-6 uppercase tracking-wider">
-          STEAD Protocol will now initialize
-        </p>
-      </div>
 
-      {/* CTA */}
-      <div className="animate-fade-up-delay-2 flex flex-col items-center gap-2 w-full max-w-xs mt-4">
+        {/* CTA */}
         <button
           onClick={onContinue}
-          className="w-full py-3.5 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 text-sm font-semibold transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center justify-center gap-2"
+          className="group relative w-full py-3 bg-ink text-paper text-sm font-medium rounded-sm overflow-hidden"
         >
-          <span>Enter Live Environment</span>
-          <ArrowRight className="w-4 h-4" />
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            Enter Live Environment
+            <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          </span>
+          <span className="absolute inset-0 bg-teal translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
         </button>
       </div>
     </div>

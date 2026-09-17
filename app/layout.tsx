@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-serif",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
 });
@@ -17,7 +23,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "STEAD — Your intent, not your tremor.",
   description:
-    "Real-time tremor filtering for accessible cursor control. Free, browser-based, personalised to you. Built on the One Euro Filter.",
+    "An invisible mathematical substrate that filters biological oscillation. Experience sub-millisecond cursor stabilization directly in the browser.",
   openGraph: {
     title: "STEAD",
     description: "Your intent, not your tremor.",
@@ -25,13 +31,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-zinc-950 text-zinc-50 antialiased overflow-hidden">
+      <body className="min-h-full font-sans overflow-hidden cursor-none">
         {children}
       </body>
     </html>

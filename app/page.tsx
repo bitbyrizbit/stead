@@ -90,7 +90,7 @@ export default function Home() {
   }, [activeTarget]);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden select-none selection:bg-emerald-500/30 selection:text-emerald-50">
+    <main className="relative w-screen h-screen overflow-hidden select-none cursor-none bg-paper text-ink">
 
       {/* ── Step 1: Landing ── */}
       {step === "landing" && (
@@ -145,30 +145,30 @@ export default function Home() {
           <div className="absolute top-6 left-6 z-20 flex flex-col gap-3 pointer-events-none">
             {/* Wordmark */}
             <div className="mb-2">
-              <p className="text-white text-2xl font-semibold tracking-tight leading-none">STEAD</p>
-              <p className="text-zinc-400 text-xs font-medium mt-1">Universal kinematic dampening.</p>
+              <p className="font-serif text-2xl tracking-tighter text-ink font-medium leading-none">STEAD</p>
+              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted mt-1">/ accessibility substrate</p>
             </div>
 
             {/* Cursor legend */}
             <div className="flex flex-col gap-2 mt-2">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full border-2 border-zinc-500 border-dashed shrink-0" />
-                <span className="text-zinc-300 text-xs font-medium">Unassisted Pathway</span>
+                <span className="w-2.5 h-2.5 rounded-full border border-amber border-dashed shrink-0" />
+                <span className="text-ink-soft text-[10px] font-mono uppercase tracking-[0.1em]">Unassisted Pathway</span>
               </div>
               {!steadEnabled ? null : (
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                  <span className="text-zinc-300 text-xs font-medium">Active Filter</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-teal shrink-0" />
+                  <span className="text-ink-soft text-[10px] font-mono uppercase tracking-[0.1em]">Active Filter</span>
                 </div>
               )}
             </div>
 
             {/* Live params */}
-            <div className="mt-3 flex flex-col gap-1 text-[10px] text-zinc-500 uppercase tracking-wider">
+            <div className="mt-3 flex flex-col gap-1 text-[10px] text-ink-muted font-mono uppercase tracking-[0.1em]">
               <span>{frequency} Hz · {amplitude} px tremor</span>
               <span>minCutoff={minCutoff.toFixed(2)} β={beta.toFixed(3)}</span>
               {isPersonalised && (
-                <span className="text-emerald-400 mt-1 font-medium">Profile Linked</span>
+                <span className="text-teal mt-1 font-medium">Profile Linked</span>
               )}
             </div>
           </div>
@@ -179,10 +179,10 @@ export default function Home() {
             <button
               onClick={() => setSteadEnabled(v => !v)}
               className={[
-                "px-6 py-2 rounded-full text-xs font-medium transition-all duration-200 border shadow-sm",
+                "px-6 py-2 rounded-sm text-[11px] font-mono uppercase tracking-[0.1em] font-medium transition-all duration-200 border",
                 steadEnabled
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                  : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10",
+                  ? "bg-teal border-teal text-paper"
+                  : "bg-paper-warm border-line text-ink-muted hover:bg-paper-dim",
               ].join(" ")}
             >
               STEAD Protocol {steadEnabled ? "ACTIVE" : "DISABLED"}
@@ -192,10 +192,10 @@ export default function Home() {
             <button
               onClick={() => setActiveTarget(v => v === null ? 0 : null)}
               className={[
-                "px-5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200",
+                "px-5 py-1.5 rounded-sm text-[11px] font-mono uppercase tracking-[0.1em] font-medium border transition-all duration-200",
                 activeTarget !== null
-                  ? "bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-                  : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10",
+                  ? "bg-amber-soft border-amber-soft text-ink"
+                  : "bg-paper-warm border-line text-ink-muted hover:bg-paper-dim",
               ].join(" ")}
             >
               {activeTarget !== null ? "Halt diagnostic" : "Run diagnostic"}
@@ -204,7 +204,7 @@ export default function Home() {
             {/* Re-calibrate */}
             <button
               onClick={() => { setStep("calibration"); setActiveTarget(null); }}
-              className="text-[10px] text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition-colors mt-1"
+              className="text-[10px] text-ink-muted font-mono uppercase tracking-[0.15em] hover:text-ink transition-colors mt-1 underline decoration-line underline-offset-4"
             >
               Recalibrate
             </button>
@@ -212,8 +212,8 @@ export default function Home() {
             {/* Hit feedback */}
             {lastHit && (
               <span className={[
-                "text-sm font-semibold transition-opacity",
-                lastHit.startsWith("✓") ? "text-emerald-400" : "text-zinc-400",
+                "text-xs font-mono uppercase tracking-widest font-semibold transition-opacity mt-2",
+                lastHit.startsWith("✓") ? "text-teal" : "text-ink-soft",
               ].join(" ")}>
                 {lastHit}
               </span>
@@ -237,7 +237,7 @@ export default function Home() {
           {/* ── Bottom hint ── */}
           {activeTarget === null && (
             <div className="absolute bottom-5 left-0 right-0 flex justify-center z-10 pointer-events-none">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
+              <p className="text-[10px] text-ink-muted font-mono uppercase tracking-[0.15em]">
                 Move your mouse · click the buttons below to test accuracy
               </p>
             </div>
