@@ -21,8 +21,8 @@ export default function Footer() {
         {/* Flowing prose layout instead of columns */}
         <div className="border-t border-line pt-10 mb-10">
           <p className="font-serif text-xl lg:text-2xl leading-[1.4] tracking-tight text-ink-soft max-w-[700px] mb-10">
-            An open-source accessibility substrate. Built for the 6 million
-            people living with essential tremor â€” and anyone whose hand has
+            An kinematic accessibility layer. Built for the 6 million
+            people living with essential tremor — and anyone whose hand has
             ever missed what their eye aimed for.
           </p>
 
@@ -30,7 +30,7 @@ export default function Footer() {
           <div className="space-y-3 text-sm text-ink-muted">
             <p>
               <span className="text-ink">Product</span>
-              {' â€” '}
+              {' — '}
               <a href="#" data-cursor="hover" className="text-ink-soft hover:text-copper transition-colors">extension</a>
               {', '}
               <a href="#" data-cursor="hover" className="text-ink-soft hover:text-copper transition-colors">playground</a>
@@ -41,7 +41,7 @@ export default function Footer() {
             </p>
             <p>
               <span className="text-ink">Source</span>
-              {' â€” '}
+              {' — '}
               <a href="#" data-cursor="hover" className="text-ink-soft hover:text-copper transition-colors">GitHub</a>
               {', '}
               <a href="#" data-cursor="hover" className="text-ink-soft hover:text-copper transition-colors">kernel (WASM)</a>
@@ -52,7 +52,7 @@ export default function Footer() {
             </p>
             <p>
               <span className="text-ink">Community</span>
-              {' â€” '}
+              {' — '}
               <a href="#" data-cursor="hover" className="text-ink-soft hover:text-copper transition-colors">Discord</a>
               {', '}
               <a href="#" data-cursor="hover" className="text-ink-soft hover:text-copper transition-colors">contributors</a>
@@ -64,7 +64,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar â€” single line */}
+        {/* Bottom bar — single line */}
         <div className="pt-6 border-t border-line flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px] text-ink-muted">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />

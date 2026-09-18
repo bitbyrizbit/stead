@@ -2,7 +2,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 
-/** SVG illustration for Algorithmic Dampening â€” a waveform that separates into clean + noise */
+/** SVG illustration for Algorithmic Dampening — a waveform that separates into clean + noise */
 function WaveSVG() {
   return (
     <svg viewBox="0 0 400 180" className="w-full h-full" fill="none">
@@ -30,7 +30,7 @@ function WaveSVG() {
   );
 }
 
-/** SVG for Magnetic Geometry â€” radial pull lines toward a center node */
+/** SVG for Magnetic Geometry — radial pull lines toward a center node */
 function MagneticSVG() {
   return (
     <svg viewBox="0 0 400 180" className="w-full h-full" fill="none">
@@ -84,7 +84,7 @@ function MagneticSVG() {
   );
 }
 
-/** SVG for Zero Telemetry â€” a closed loop, nothing leaves */
+/** SVG for Zero Telemetry — a closed loop, nothing leaves */
 function TelemetrySVG() {
   return (
     <svg viewBox="0 0 400 180" className="w-full h-full" fill="none">
@@ -128,8 +128,8 @@ const cards = [
   {
     num: 'i',
     title: 'Algorithmic dampening',
-    body: 'Continuous real-time Fourier analysis identifies high-frequency cyclic tremors in the 4â€“12 Hz band. The kernel subtracts these oscillations from the pointer stream without introducing perceptible lag â€” a critically damped second-order system running at native refresh.',
-    metric: '4â€“12 Hz',
+    body: 'Continuous real-time Fourier analysis identifies high-frequency cyclic tremors in the 4–12 Hz band. The kernel subtracts these oscillations from the pointer stream without introducing perceptible lag — a critically damped second-order system running at native refresh.',
+    metric: '4–12 Hz',
     label: 'tremor band',
     visual: <WaveSVG />,
     bg: 'bg-bone',
@@ -140,7 +140,7 @@ const cards = [
   {
     num: 'ii',
     title: 'Magnetic geometry',
-    body: 'Interactive nodes exert a radial gravitational pull on the stabilized cursor. As the pointer enters a node\'s influence radius, it is drawn organically toward the center â€” transforming strenuous fine-clicks into effortless gestures. The pull curve is configurable per element.',
+    body: 'Interactive nodes exert a radial gravitational pull on the stabilized cursor. As the pointer enters a node\'s influence radius, it is drawn organically toward the center — transforming strenuous fine-clicks into effortless gestures. The pull curve is configurable per element.',
     metric: '60px',
     label: 'influence radius',
     visual: <MagneticSVG />,
@@ -152,7 +152,7 @@ const cards = [
   {
     num: 'iii',
     title: 'Zero telemetry',
-    body: 'All kinematic processing happens locally in real-time. No coordinate data ever leaves the device. The kernel is a single 14KB WASM module that runs in a Web Worker, isolated from the main thread. Open-source, auditable, and forever free.',
+    body: 'All kinematic processing happens locally in real-time. No coordinate data ever leaves the device. The kernel is a single 14KB WASM module that runs in a Web Worker, isolated from the main thread. Auditable and mathematically guaranteed.',
     metric: '14KB',
     label: 'wasm module',
     visual: <TelemetrySVG />,

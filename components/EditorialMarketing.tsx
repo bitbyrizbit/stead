@@ -1,7 +1,6 @@
 "use client";
 import React from 'react';
 import SmoothScroll from './SmoothScroll';
-import Cursor from './Cursor';
 import Nav from './Nav';
 import Hero from './Hero';
 import Manifesto from './Manifesto';
@@ -19,7 +18,6 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
   return (
     <SmoothScroll>
       <div className="noise-overlay" />
-      <Cursor />
       <Nav onStart={onStart} />
 
       <main>

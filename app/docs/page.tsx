@@ -43,7 +43,7 @@ export default function Docs() {
         </div>
         
         <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase">
-          v0.4.2 — Open Core
+          STEAD Documentation
         </div>
       </aside>
 

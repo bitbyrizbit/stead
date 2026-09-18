@@ -176,7 +176,7 @@ function DemoCanvas() {
       <canvas ref={canvasRef} className="absolute inset-0" />
       <div className="absolute top-4 left-4 flex items-center gap-2 text-[11px] text-ink-muted">
         <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-sage' : 'bg-ink-muted/40'} ${active ? 'animate-pulse' : ''}`} />
-        {active ? 'Live Â· stabilizing' : 'Hover to activate'}
+        {active ? 'Live · stabilizing' : 'Hover to activate'}
       </div>
       <div className="absolute top-4 right-4 text-[11px] text-ink-muted tnum">
         {hitCount}/{total} nodes reached
@@ -198,16 +198,7 @@ export default function Hero({ onStart }: { onStart?: () => void }) {
   return (
     <section ref={ref} className="relative min-h-screen pt-28 pb-16 px-6 lg:px-10">
       <motion.div style={{ y, opacity }} className="max-w-[1300px] mx-auto">
-        {/* Top row â€” minimal meta */}
-        <div className="flex items-center justify-between mb-12 lg:mb-16">
-          <div className="flex items-center gap-2 text-[11px] text-ink-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />
-            STEAD // uncompromising precision
-          </div>
-          <div className="text-[11px] text-ink-muted hidden md:block">
-            Sub-millisecond cursor stabilization
-          </div>
-        </div>
+
 
         {/* Headline + demo interwoven */}
         <div className="mb-12">
@@ -226,7 +217,7 @@ export default function Hero({ onStart }: { onStart?: () => void }) {
           <div className="col-span-12 lg:col-span-4 flex flex-col justify-between gap-6">
             <p className="text-base lg:text-lg leading-relaxed text-ink-soft">
               An invisible mathematical substrate that filters biological
-              oscillation / so the cursor moves where you mean it to, not where
+              oscillation, so the cursor moves where you mean it to, not where
               your hand sends it.
             </p>
             <div className="flex items-center gap-4">

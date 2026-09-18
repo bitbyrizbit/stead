@@ -20,7 +20,7 @@ export default function Nav({ onStart }: { onStart?: () => void }) {
       <div className="px-6 lg:px-10 py-4 flex items-center justify-between">
         <a href="#" data-cursor="hover" className="flex items-baseline gap-2">
           <span className="font-serif text-xl tracking-tighter text-ink font-medium">STEAD</span>
-          <span className="text-[11px] text-ink-muted hidden sm:inline">accessibility substrate</span>
+          <span className="text-[11px] text-ink-muted hidden sm:inline">your intent, not your tremor</span>
         </a>
 
         <div className="hidden md:flex items-center gap-7 text-sm text-ink-soft">

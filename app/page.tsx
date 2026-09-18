@@ -20,6 +20,7 @@ import { ComparisonCanvas } from "@/components/ComparisonCanvas";
 import LoadingScreen from "@/components/LoadingScreen";
 import { DebugPanel } from "@/components/DebugPanel";
 import { AccuracyBoard } from "@/components/AccuracyBoard";
+import Cursor from "@/components/Cursor";
 import { ClickTargetLayer, ClickTargetLayerHandle, TARGET_LABELS } from "@/components/ClickTargetLayer";
 import { TremorInjector } from "@/lib/tremorInjector";
 import type { SPIClick } from "@/lib/steadPrecisionIndex";
@@ -92,11 +93,14 @@ export default function App() {
   }, [activeTarget]);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden select-none cursor-none bg-bone text-ink">
+    <main className={`relative w-screen select-none cursor-none bg-bone text-ink ${step === "landing" ? "min-h-screen" : "h-screen overflow-hidden"}`}>
+      {/* Global Cursor so it persists everywhere */}
+      <Cursor />
+
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
-      {/* 🚀 Step 1: Landing 🚀 */}
+      {/* Step 1: Landing */}
       {step === "landing" && (
-        <div className="absolute inset-0 z-50 overflow-y-auto">
+        <div className="relative z-40">
           <EditorialMarketing onStart={() => setStep("calibration")} />
         </div>
       )}
@@ -146,9 +150,15 @@ export default function App() {
           {/* ── Legend (top-left) ── */}
           <div className="absolute top-6 left-6 z-20 flex flex-col gap-3 pointer-events-none">
             {/* Wordmark */}
-            <div className="mb-2">
-              <p className="font-serif text-2xl tracking-tighter text-ink font-medium leading-none">STEAD</p>
-              <p className="text-[10px] font-mono  tracking-[0.2em] text-ink-muted mt-1">/ accessibility substrate</p>
+            <div className="mb-2 pointer-events-auto">
+              <button
+                onClick={() => setStep("landing")}
+                className="text-left"
+                data-cursor="hover"
+              >
+                <p className="font-serif text-2xl tracking-tighter text-ink font-medium leading-none">STEAD</p>
+                <p className="text-[10px] font-mono tracking-[0.2em] text-ink-muted mt-1 uppercase">your intent, not your tremor</p>
+              </button>
             </div>
 
             {/* Cursor legend */}
