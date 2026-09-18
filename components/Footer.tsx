@@ -14,7 +14,7 @@ export default function Footer() {
           className="mb-16"
         >
           <h2 className="font-serif text-[clamp(3.5rem,16vw,14rem)] leading-[0.85] tracking-tighter text-ink">
-            Stead
+            STEAD
           </h2>
         </motion.div>
 
@@ -68,7 +68,7 @@ export default function Footer() {
         <div className="pt-6 border-t border-line flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px] text-ink-muted">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />
-            All systems operational Â· v0.4.2 Â· 2026-09-18
+            STEAD // Kernel active
           </div>
           <div className="flex items-center gap-5">
             <a href="/docs" data-cursor="hover" className="hover:text-ink transition-colors">Documentation</a>

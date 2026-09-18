@@ -32,7 +32,7 @@ export default function Extension() {
 
           <div className="flex-1 lg:pt-6">
             <p className="text-base lg:text-lg text-ink-soft leading-relaxed max-w-md">
-              The lightweight Stead extension applies architectural kinematic
+              The lightweight STEAD extension applies architectural kinematic
               damping to every button, link, and input across the web. One
               install. No configuration. No accounts.
             </p>
@@ -47,7 +47,7 @@ export default function Extension() {
             data-cursor="hover"
           >
             <span className="relative z-10 flex items-center gap-2">
-              Add to Chrome â€” 14KB
+              Add to Chrome / 14KB
               <span className="inline-block transition-transform group-hover:translate-x-1">â†’</span>
             </span>
             <span className="absolute inset-0 bg-copper translate-y-full group-hover:translate-y-0 transition-transform duration-400" />

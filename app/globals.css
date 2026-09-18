@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-serif);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  
   --color-ink: #1A1612;
   --color-ink-soft: #3D362E;
   --color-ink-muted: #7A7064;
@@ -27,8 +26,19 @@
     --fg: #1A1612;
   }
 
-  html, body {
-    background-color: var(--bg);
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
     color: var(--fg);
     overflow-x: hidden;
     cursor: none;
@@ -64,11 +74,8 @@
     mix-blend-mode: multiply;
   }
 
-  .grain {
-    position: relative;
-  }
   .grain::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -88,4 +95,9 @@
   }
 
   .tnum { font-variant-numeric: tabular-nums; }
+
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped { overflow: hidden; }
 }

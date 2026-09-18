@@ -19,7 +19,7 @@ export default function Nav({ onStart }: { onStart?: () => void }) {
     >
       <div className="px-6 lg:px-10 py-4 flex items-center justify-between">
         <a href="#" data-cursor="hover" className="flex items-baseline gap-2">
-          <span className="font-serif text-xl tracking-tighter text-ink font-medium">Stead</span>
+          <span className="font-serif text-xl tracking-tighter text-ink font-medium">STEAD</span>
           <span className="text-[11px] text-ink-muted hidden sm:inline">accessibility substrate</span>
         </a>
 
@@ -35,7 +35,7 @@ export default function Nav({ onStart }: { onStart?: () => void }) {
           className="group relative px-5 py-2 bg-ink text-bone text-sm rounded-sm overflow-hidden"
           data-cursor="hover"
         >
-          <span className="relative z-10">Get Stead</span>
+          <span className="relative z-10">Get STEAD</span>
           <span className="absolute inset-0 bg-copper translate-y-full group-hover:translate-y-0 transition-transform duration-400" />
         </button>
       </div>

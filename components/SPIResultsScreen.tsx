@@ -6,12 +6,12 @@ import { Activity } from "lucide-react";
 
 interface SPIResultsScreenProps {
   presetKey: PresetKey;
-  spiBeforeStead: SPIResult;
+  spiBeforeSTEAD: SPIResult;
   onContinue: () => void;
 }
 
-export function SPIResultsScreen({ presetKey, spiBeforeStead, onContinue }: SPIResultsScreenProps) {
-  const hitPct = Math.round(spiBeforeStead.hitRate * 100);
+export function SPIResultsScreen({ presetKey, spiBeforeSTEAD, onContinue }: SPIResultsScreenProps) {
+  const hitPct = Math.round(spiBeforeSTEAD.hitRate * 100);
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-bone selection:bg-sage selection:text-bone cursor-none">

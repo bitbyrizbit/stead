@@ -202,7 +202,7 @@ export default function Hero({ onStart }: { onStart?: () => void }) {
         <div className="flex items-center justify-between mb-12 lg:mb-16">
           <div className="flex items-center gap-2 text-[11px] text-ink-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />
-            Open source Â· v0.4.2
+            STEAD // uncompromising precision
           </div>
           <div className="text-[11px] text-ink-muted hidden md:block">
             Sub-millisecond cursor stabilization
@@ -226,7 +226,7 @@ export default function Hero({ onStart }: { onStart?: () => void }) {
           <div className="col-span-12 lg:col-span-4 flex flex-col justify-between gap-6">
             <p className="text-base lg:text-lg leading-relaxed text-ink-soft">
               An invisible mathematical substrate that filters biological
-              oscillation â€” so the cursor moves where you mean it to, not where
+              oscillation / so the cursor moves where you mean it to, not where
               your hand sends it.
             </p>
             <div className="flex items-center gap-4">

@@ -62,7 +62,7 @@ async function persistCalibration(sessionId: string, result: CalibrationResult) 
 export interface CalibrationOutput {
   calibration: CalibrationResult;
   presetKey: PresetKey;
-  spiBeforeStead: SPIResult;
+  spiBeforeSTEAD: SPIResult;
   clickTimesMs: number[];
   inputType: InputType;
 }
@@ -202,14 +202,14 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
         beta: presetParams.beta,
       };
 
-      const spiBeforeStead = estimateSPIFromDeviation(avgDev, avgClickTime);
+      const spiBeforeSTEAD = estimateSPIFromDeviation(avgDev, avgClickTime);
 
       persistCalibration(sessionId.current, snappedCalibration);
 
       setTimeout(() => onComplete({
         calibration: snappedCalibration,
         presetKey,
-        spiBeforeStead,
+        spiBeforeSTEAD,
         clickTimesMs: clickTimesRef.current,
         inputType: inputTypeRef.current,
       }), 800);
@@ -235,13 +235,13 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
         setStep("done");
         const presetParams = getPresetParams("strong", inputTypeRef.current);
         const fallbackCalibration = { minCutoff: presetParams.minCutoff, beta: presetParams.beta, avgDeviation: 20 };
-        const spiBeforeStead = estimateSPIFromDeviation(20, 10000);
+        const spiBeforeSTEAD = estimateSPIFromDeviation(20, 10000);
         
         persistCalibration(sessionId.current, fallbackCalibration);
         setTimeout(() => onComplete({
           calibration: fallbackCalibration,
           presetKey: "strong",
-          spiBeforeStead,
+          spiBeforeSTEAD,
           clickTimesMs: [10000, 10000, 10000, 10000, 10000],
           inputType: inputTypeRef.current,
         }), 800);

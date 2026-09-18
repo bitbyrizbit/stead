@@ -17,6 +17,7 @@ import { EditorialMarketing } from "@/components/EditorialMarketing";
 import { CalibrationGame, type CalibrationOutput } from "@/components/CalibrationGame";
 import { SPIResultsScreen } from "@/components/SPIResultsScreen";
 import { ComparisonCanvas } from "@/components/ComparisonCanvas";
+import LoadingScreen from "@/components/LoadingScreen";
 import { DebugPanel } from "@/components/DebugPanel";
 import { AccuracyBoard } from "@/components/AccuracyBoard";
 import { ClickTargetLayer, ClickTargetLayerHandle, TARGET_LABELS } from "@/components/ClickTargetLayer";
@@ -27,8 +28,9 @@ type Step = "landing" | "calibration" | "spi-results" | "demo";
 
 const DEFAULTS = { amplitude: 8, frequency: 5, minCutoff: 1.0, beta: 0.007 };
 
-export default function Home() {
+export default function App() {
   const [step, setStep] = useState<Step>("landing");
+  const [loading, setLoading] = useState(true);
   const [amplitude, setAmplitude] = useState(DEFAULTS.amplitude);
   const [frequency, setFrequency] = useState(DEFAULTS.frequency);
   const [minCutoff, setMinCutoff] = useState(DEFAULTS.minCutoff);
@@ -91,8 +93,8 @@ export default function Home() {
 
   return (
     <main className="relative w-screen h-screen overflow-hidden select-none cursor-none bg-bone text-ink">
-
-      {/* ── Step 1: Landing ── */}
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
+      {/* 🚀 Step 1: Landing 🚀 */}
       {step === "landing" && (
         <div className="absolute inset-0 z-50 overflow-y-auto">
           <EditorialMarketing onStart={() => setStep("calibration")} />
@@ -112,7 +114,7 @@ export default function Home() {
       {step === "spi-results" && calibrationOutput && (
         <SPIResultsScreen
           presetKey={calibrationOutput.presetKey}
-          spiBeforeStead={calibrationOutput.spiBeforeStead}
+          spiBeforeSTEAD={calibrationOutput.spiBeforeSTEAD}
           onContinue={() => setStep("demo")}
         />
       )}

@@ -7,7 +7,7 @@ export default function Manifesto() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
-  const text = `Every hand trembles. It is not a flaw â€” it is biology. The question was never whether to fix it, but whether software should listen to it. Stead does not correct you. It hears the difference between what you reached for and what your hand did, and it chooses the former.`;
+  const text = `Every hand trembles. It is not a flaw â€” it is biology. The question was never whether to fix it, but whether software should listen to it. STEAD does not correct you. It hears the difference between what you reached for and what your hand did, and it chooses the former.`;
 
   const sentences = text.split('. ');
 
@@ -48,7 +48,7 @@ export default function Manifesto() {
         <div className="mt-14 flex items-start gap-5">
           <div className="w-10 h-px bg-ink mt-3 shrink-0" />
           <p className="text-sm text-ink-muted max-w-md leading-relaxed">
-            Stead is an accessibility substrate, not a feature. It runs beneath the
+            STEAD is an accessibility substrate, not a feature. It runs beneath the
             interface, asking nothing of the user and nothing of the network. It
             exists for the 6 million people living with essential tremor, and for
             anyone whose hand has ever missed what their eye aimed for.
