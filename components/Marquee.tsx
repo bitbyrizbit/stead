@@ -1,17 +1,19 @@
-"use client";
-import { useEffect, useRef, useState } from 'react';
-
+﻿"use client";
 export default function Marquee({ items, className = '' }: { items: string[]; className?: string }) {
+  const doubled = [...items, ...items];
   return (
-    <div className={`overflow-hidden py-4 ${className}`}>
-      <div className="flex whitespace-nowrap marquee-track">
-        {[...items, ...items, ...items, ...items].map((item, i) => (
-          <div key={i} className="flex items-center mx-6">
-            <span className="font-serif text-sm tracking-widest text-ink/70">{item}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-copper/30 mx-12"></span>
-          </div>
+    <div className={`relative overflow-hidden py-5 ${className}`}>
+      <div className="marquee-track flex items-center gap-10 whitespace-nowrap">
+        {doubled.map((item, i) => (
+          <span key={i} className="flex items-center gap-10">
+            <span className="font-serif text-xl lg:text-2xl tracking-tight text-ink/70 italic">
+              {item}
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-copper/40 shrink-0" />
+          </span>
         ))}
       </div>
     </div>
   );
 }
+
