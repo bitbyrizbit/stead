@@ -272,6 +272,7 @@ export function EditorialMarketing({ onStart }: ModernMarketingProps) {
           <div className="hidden md:flex items-center gap-8 text-sm text-ink-soft">
             <a href="#playground" className="hover:text-sage transition-colors">Playground</a>
             <a href="#technology" className="hover:text-sage transition-colors">Technology</a>
+            <a href="/docs" className="hover:text-sage transition-colors">Docs</a>
           </div>
           <button onClick={onStart} className="group relative px-4 py-2 bg-ink text-bone text-xs font-medium rounded-sm overflow-hidden">
             <span className="relative z-10">Get STEAD</span>
