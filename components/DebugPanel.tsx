@@ -20,7 +20,7 @@ function Slider({ label, value, min, max, step, unit = "", onChange }: SliderPro
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between items-baseline">
-        <span className="text-[11px] font-mono text-ink-muted uppercase tracking-widest">{label}</span>
+        <span className="text-[11px] font-mono text-ink-muted  tracking-widest">{label}</span>
         <span className="text-[11px] text-ink font-mono tnum">
           {value.toFixed(decimals)}{unit}
         </span>
@@ -55,19 +55,19 @@ export function DebugPanel({
   onAmplitudeChange, onFrequencyChange, onMinCutoffChange, onBetaChange,
 }: DebugPanelProps) {
   return (
-    <div className="absolute top-6 right-6 z-20 w-64 rounded-sm bg-paper-warm border border-line p-5 flex flex-col gap-5 shadow-sm">
+    <div className="absolute top-6 right-6 z-20 w-64 rounded-sm bg-bone-warm border border-line p-5 flex flex-col gap-5 shadow-sm">
 
       {/* Header */}
       <div className="flex items-center justify-between border-b border-line pb-2">
-        <span className="text-[10px] font-mono font-medium text-ink uppercase tracking-[0.2em]">
+        <span className="text-[10px] font-mono font-medium text-ink  tracking-[0.2em]">
           Laboratory Controls
         </span>
-        <div className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
+        <div className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />
       </div>
 
       {/* Tremor simulation */}
       <div className="flex flex-col gap-4">
-        <p className="text-[10px] text-teal font-mono uppercase tracking-[0.15em] font-medium">
+        <p className="text-[10px] text-sage font-mono  tracking-[0.15em] font-medium">
           Tremor Generation
         </p>
         <Slider label="Amplitude" value={amplitude} min={0} max={30} step={0.5} unit=" px" onChange={onAmplitudeChange} />
@@ -78,7 +78,7 @@ export function DebugPanel({
 
       {/* Filter */}
       <div className="flex flex-col gap-4">
-        <p className="text-[10px] text-amber-soft font-mono uppercase tracking-[0.15em] font-medium">
+        <p className="text-[10px] text-copper-soft font-mono  tracking-[0.15em] font-medium">
           Algorithmic Dampener
         </p>
         <Slider label="minCutoff" value={minCutoff} min={0.1} max={5} step={0.1} unit=" Hz" onChange={onMinCutoffChange} />
@@ -86,7 +86,7 @@ export function DebugPanel({
       </div>
 
       {amplitude === 0 && (
-        <p className="text-[10px] text-teal pt-2 font-mono uppercase tracking-[0.1em]">
+        <p className="text-[10px] text-sage pt-2 font-mono  tracking-[0.1em]">
           ✓ Zero amplitude state detected
         </p>
       )}

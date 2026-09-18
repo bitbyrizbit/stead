@@ -91,13 +91,13 @@ export const ClickTargetLayer = forwardRef<
             ref={(el) => { buttonRefs.current[i] = el; }}
             tabIndex={-1}
             className={[
-              "flex items-center justify-center text-[11px] font-mono uppercase tracking-[0.1em] font-medium rounded-sm border transition-all duration-150",
-              "text-ink-soft border-line bg-paper shadow-sm",
+              "flex items-center justify-center text-[11px] font-mono  tracking-[0.1em] font-medium rounded-sm border transition-all duration-150",
+              "text-ink-soft border-line bg-bone shadow-sm",
               activeTarget === i
-                ? "border-teal bg-teal-pale text-teal ring-1 ring-teal"
+                ? "border-sage bg-sage-pale text-sage ring-1 ring-teal"
                 : "",
               flashIndex === i
-                ? "bg-teal border-teal text-paper scale-95 ring-2 ring-teal-soft shadow-lg"
+                ? "bg-sage border-sage text-bone scale-95 ring-2 ring-teal-soft shadow-lg"
                 : "",
             ]
               .filter(Boolean)

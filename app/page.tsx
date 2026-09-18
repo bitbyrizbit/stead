@@ -90,7 +90,7 @@ export default function Home() {
   }, [activeTarget]);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden select-none cursor-none bg-paper text-ink">
+    <main className="relative w-screen h-screen overflow-hidden select-none cursor-none bg-bone text-ink">
 
       {/* ── Step 1: Landing ── */}
       {step === "landing" && (
@@ -146,29 +146,29 @@ export default function Home() {
             {/* Wordmark */}
             <div className="mb-2">
               <p className="font-serif text-2xl tracking-tighter text-ink font-medium leading-none">STEAD</p>
-              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink-muted mt-1">/ accessibility substrate</p>
+              <p className="text-[10px] font-mono  tracking-[0.2em] text-ink-muted mt-1">/ accessibility substrate</p>
             </div>
 
             {/* Cursor legend */}
             <div className="flex flex-col gap-2 mt-2">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full border border-amber border-dashed shrink-0" />
-                <span className="text-ink-soft text-[10px] font-mono uppercase tracking-[0.1em]">Unassisted Pathway</span>
+                <span className="w-2.5 h-2.5 rounded-full border border-copper border-dashed shrink-0" />
+                <span className="text-ink-soft text-[10px] font-mono  tracking-[0.1em]">Unassisted Pathway</span>
               </div>
               {!steadEnabled ? null : (
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-teal shrink-0" />
-                  <span className="text-ink-soft text-[10px] font-mono uppercase tracking-[0.1em]">Active Filter</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-sage shrink-0" />
+                  <span className="text-ink-soft text-[10px] font-mono  tracking-[0.1em]">Active Filter</span>
                 </div>
               )}
             </div>
 
             {/* Live params */}
-            <div className="mt-3 flex flex-col gap-1 text-[10px] text-ink-muted font-mono uppercase tracking-[0.1em]">
+            <div className="mt-3 flex flex-col gap-1 text-[10px] text-ink-muted font-mono  tracking-[0.1em]">
               <span>{frequency} Hz · {amplitude} px tremor</span>
               <span>minCutoff={minCutoff.toFixed(2)} β={beta.toFixed(3)}</span>
               {isPersonalised && (
-                <span className="text-teal mt-1 font-medium">Profile Linked</span>
+                <span className="text-sage mt-1 font-medium">Profile Linked</span>
               )}
             </div>
           </div>
@@ -179,10 +179,10 @@ export default function Home() {
             <button
               onClick={() => setSteadEnabled(v => !v)}
               className={[
-                "px-6 py-2 rounded-sm text-[11px] font-mono uppercase tracking-[0.1em] font-medium transition-all duration-200 border",
+                "px-6 py-2 rounded-sm text-[11px] font-mono  tracking-[0.1em] font-medium transition-all duration-200 border",
                 steadEnabled
-                  ? "bg-teal border-teal text-paper"
-                  : "bg-paper-warm border-line text-ink-muted hover:bg-paper-dim",
+                  ? "bg-sage border-sage text-bone"
+                  : "bg-bone-warm border-line text-ink-muted hover:bg-bone-dim",
               ].join(" ")}
             >
               STEAD Protocol {steadEnabled ? "ACTIVE" : "DISABLED"}
@@ -192,10 +192,10 @@ export default function Home() {
             <button
               onClick={() => setActiveTarget(v => v === null ? 0 : null)}
               className={[
-                "px-5 py-1.5 rounded-sm text-[11px] font-mono uppercase tracking-[0.1em] font-medium border transition-all duration-200",
+                "px-5 py-1.5 rounded-sm text-[11px] font-mono  tracking-[0.1em] font-medium border transition-all duration-200",
                 activeTarget !== null
-                  ? "bg-amber-soft border-amber-soft text-ink"
-                  : "bg-paper-warm border-line text-ink-muted hover:bg-paper-dim",
+                  ? "bg-copper-soft border-copper-soft text-ink"
+                  : "bg-bone-warm border-line text-ink-muted hover:bg-bone-dim",
               ].join(" ")}
             >
               {activeTarget !== null ? "Halt diagnostic" : "Run diagnostic"}
@@ -204,7 +204,7 @@ export default function Home() {
             {/* Re-calibrate */}
             <button
               onClick={() => { setStep("calibration"); setActiveTarget(null); }}
-              className="text-[10px] text-ink-muted font-mono uppercase tracking-[0.15em] hover:text-ink transition-colors mt-1 underline decoration-line underline-offset-4"
+              className="text-[10px] text-ink-muted font-mono  tracking-[0.15em] hover:text-ink transition-colors mt-1 underline decoration-line underline-offset-4"
             >
               Recalibrate
             </button>
@@ -212,8 +212,8 @@ export default function Home() {
             {/* Hit feedback */}
             {lastHit && (
               <span className={[
-                "text-xs font-mono uppercase tracking-widest font-semibold transition-opacity mt-2",
-                lastHit.startsWith("✓") ? "text-teal" : "text-ink-soft",
+                "text-xs font-mono  tracking-widest font-semibold transition-opacity mt-2",
+                lastHit.startsWith("✓") ? "text-sage" : "text-ink-soft",
               ].join(" ")}>
                 {lastHit}
               </span>
@@ -237,7 +237,7 @@ export default function Home() {
           {/* ── Bottom hint ── */}
           {activeTarget === null && (
             <div className="absolute bottom-5 left-0 right-0 flex justify-center z-10 pointer-events-none">
-              <p className="text-[10px] text-ink-muted font-mono uppercase tracking-[0.15em]">
+              <p className="text-[10px] text-ink-muted font-mono  tracking-[0.15em]">
                 Move your mouse · click the buttons below to test accuracy
               </p>
             </div>

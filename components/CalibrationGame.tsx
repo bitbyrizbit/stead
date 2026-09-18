@@ -262,12 +262,12 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
         <>
           <canvas ref={canvasRef} className="absolute inset-0" style={{ cursor: "none" }} />
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
-            <p className="text-ink-muted text-[10px] font-mono uppercase tracking-[0.2em] font-medium">
+            <p className="text-ink-muted text-[10px] font-mono  tracking-[0.2em] font-medium">
               {progress + 1} of {TARGET_POSITIONS_NORM.length} — acquire target
             </p>
-            <div className="w-48 h-1 bg-paper-dim rounded-full overflow-hidden">
+            <div className="w-48 h-1 bg-bone-dim rounded-full overflow-hidden">
               <div
-                className="h-full bg-teal transition-all duration-300"
+                className="h-full bg-sage transition-all duration-300"
                 style={{ width: `${(progress / TARGET_POSITIONS_NORM.length) * 100}%` }}
               />
             </div>
@@ -276,7 +276,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "intro" && (
-        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-paper p-10 rounded-sm border border-line shadow-sm">
+        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-bone p-10 rounded-sm border border-line shadow-sm">
           <div>
             <h2 className="text-2xl text-ink font-serif tracking-tighter mb-3">
               Kinematic Calibration
@@ -290,10 +290,10 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
           <div className="w-full flex flex-col gap-3">
             <button
               onClick={() => { currentTrajRef.current = []; setStep("playing"); }}
-              className="group relative w-full py-3 bg-ink text-paper text-sm font-medium rounded-sm overflow-hidden"
+              className="group relative w-full py-3 bg-ink text-bone text-sm font-medium rounded-sm overflow-hidden"
             >
               <span className="relative z-10">Initiate Diagnostic</span>
-              <span className="absolute inset-0 bg-teal translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+              <span className="absolute inset-0 bg-sage translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
             </button>
             <button
               onClick={onSkip}
@@ -306,9 +306,9 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "done" && (
-        <div className="flex flex-col items-center gap-6 text-center px-6 bg-paper p-10 rounded-sm border border-line shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-teal-pale border border-teal flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div className="flex flex-col items-center gap-6 text-center px-6 bg-bone p-10 rounded-sm border border-line shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-sage-pale border border-sage flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-sage"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
           <div>
             <p className="text-ink font-serif tracking-tighter text-2xl">Profile Established</p>
