@@ -153,7 +153,7 @@ export function CalibrationGame({
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(targetX - 12, targetY); ctx.lineTo(targetX + 12, targetY);
-      ctx.moveTo(targetX, targetY - 12); ctx.lineTo(targetX + 12, targetY);
+      ctx.moveTo(targetX, targetY - 12); ctx.lineTo(targetX, targetY + 12);
       ctx.stroke();
 
       // Cursor dot
@@ -235,8 +235,8 @@ export function CalibrationGame({
 
       {step === "playing" && (
         <>
-          <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ cursor: "none" }} />
-          <div className="absolute top-28 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
+          <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-30" style={{ cursor: "none", width: '100vw', height: '100vh' }} />
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3 pointer-events-none">
             <p className="text-ink text-xs font-sans uppercase tracking-[0.16em] font-semibold">
               Node {progress + 1} of {TARGET_POSITIONS_NORM.length} — Click to acquire
             </p>
