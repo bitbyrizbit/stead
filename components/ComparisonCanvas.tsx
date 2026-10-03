@@ -1,10 +1,6 @@
 /**
  * ComparisonCanvas — Phase 5 update
- *
- * Changes from Phase 3:
- *  - Safety clamp applied after One Euro Filter, before cursor draw.
- *  - "Reset to raw" prop — when true, bypasses all filtering instantly.
- *  - Filtered position exposed via onFilteredPos callback (used by SPI tracking).
+ * Canvas drawing with pointer-events-none so UI buttons are 100% clickable.
  */
 
 "use client";
@@ -33,10 +29,10 @@ function drawDot(
   ctx.lineWidth = 1.5;
   ctx.stroke();
   ctx.fillStyle = color;
-  ctx.font = "11px monospace";
+  ctx.font = "bold 11px system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.fillText(label, x, y + DOT_RADIUS + 13);
+  ctx.fillText(label, x, y + DOT_RADIUS + 14);
 }
 
 export interface ComparisonCanvasProps {
@@ -44,7 +40,6 @@ export interface ComparisonCanvasProps {
   frequency: number;
   minCutoff: number;
   beta: number;
-  /** When true: bypass all filtering, show only raw tremor cursor. */
   rawMode?: boolean;
   targetLayerRef: React.RefObject<ClickTargetLayerHandle | null>;
   onClickResolved?: (params: { rawX: number; rawY: number; predictedIndex: number; deviationPx: number }) => void;
@@ -65,7 +60,6 @@ export function ComparisonCanvas({
   const lastClickRef = useRef<{ index: number; time: number }>({ index: -1, time: 0 });
   const rawModeRef = useRef(rawMode);
 
-  // Sync params
   useEffect(() => {
     filterX.current.setParams(minCutoff, beta);
     filterY.current.setParams(minCutoff, beta);
@@ -89,17 +83,14 @@ export function ComparisonCanvas({
     
     if (predicted !== -1) {
       const now = performance.now();
-      // Anti-twitch debounce: prevent accidental double-clicks on the same target within 300ms
       if (lastClickRef.current.index === predicted && now - lastClickRef.current.time < 300) {
-        return; // Ignore twitch re-click
+        return;
       }
       layer.click(predicted);
       lastClickRef.current = { index: predicted, time: now };
     }
     
-    // Compute deviation for SPI scoring
     const deviationPx = measureTrajectoryDeviation(traj);
-    
     onClickResolved?.({
       rawX: filteredPos.current.x,
       rawY: filteredPos.current.y,
@@ -135,11 +126,9 @@ export function ComparisonCanvas({
       const { x: tx, y: ty } = injectorRef.current.inject(rx, ry, now);
 
       if (rawModeRef.current) {
-        // Raw mode: show only the tremor cursor, no green dot
-        drawDot(ctx, tx, ty, "rgba(161, 161, 170, 0.9)", "Raw");
+        drawDot(ctx, tx, ty, "rgba(232, 84, 43, 0.85)", "Raw Tremor");
         filteredPos.current = { x: tx, y: ty };
       } else {
-        // Normal mode: filter + safety clamp
         const fx = filterX.current.filter(tx, now);
         const fy = filterY.current.filter(ty, now);
         const clamped = applySafetyClamp({ x: tx, y: ty }, { x: fx, y: fy }, 40);
@@ -149,8 +138,8 @@ export function ComparisonCanvas({
         buf.push({ x: clamped.x, y: clamped.y, t: now });
         if (buf.length > TRAJECTORY_BUFFER_SIZE) buf.shift();
 
-        drawDot(ctx, tx, ty, "rgba(161, 161, 170, 0.9)", "Raw"); // zinc-400
-        drawDot(ctx, clamped.x, clamped.y, "rgba(5, 150, 105, 0.95)", "STEAD"); // emerald-600
+        drawDot(ctx, tx, ty, "rgba(232, 84, 43, 0.65)", "Raw Tremor");
+        drawDot(ctx, clamped.x, clamped.y, "rgba(74, 100, 56, 0.95)", "STEAD");
       }
 
       rafId = requestAnimationFrame(draw);
@@ -161,6 +150,10 @@ export function ComparisonCanvas({
   }, []);
 
   return (
-    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ cursor: "none" }} />
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ cursor: "none" }}
+    />
   );
 }

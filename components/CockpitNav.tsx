@@ -1,62 +1,75 @@
 "use client";
 import { motion } from 'framer-motion';
-import BrandMark from '@/components/BrandMark';
+import { sfx } from '@/lib/soundEffects';
 
-type DemoStep = 'calibration' | 'spi-results' | 'demo';
+type DemoStep = 'landing' | 'calibration' | 'spi-results' | 'demo';
 
 interface CockpitNavProps {
   step: DemoStep;
   onGoHome: () => void;
-  onGoCalibration?: () => void;
-  onGoDemo?: () => void;
+  onGoCalibration: () => void;
+  onGoResults: () => void;
+  onGoDemo: () => void;
 }
 
 const navItems = [
-  { id: 'home', label: 'Home' },
+  { id: 'home', label: 'STEAD' },
   { id: 'calibration', label: 'Calibrate' },
-  { id: 'results', label: 'Results' },
+  { id: 'spi-results', label: 'Results' },
   { id: 'demo', label: 'Live demo' },
 ];
 
-export default function CockpitNav({ step, onGoHome, onGoCalibration, onGoDemo }: CockpitNavProps) {
-  const activeId =
-    step === 'calibration' ? 'calibration'
-    : step === 'spi-results' ? 'results'
-    : 'demo';
-
+export default function CockpitNav({
+  step,
+  onGoHome,
+  onGoCalibration,
+  onGoResults,
+  onGoDemo,
+}: CockpitNavProps) {
   const handleClick = (id: string) => {
+    sfx.playClick(900);
     if (id === 'home') onGoHome();
-    else if (id === 'calibration' && onGoCalibration) onGoCalibration();
-    else if (id === 'demo' && onGoDemo) onGoDemo();
+    else if (id === 'calibration') onGoCalibration();
+    else if (id === 'spi-results') onGoResults();
+    else if (id === 'demo') onGoDemo();
   };
 
   return (
-    <motion.div
+    <motion.header
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-5 left-1/2 -translate-x-1/2 z-50"
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto"
     >
-      {/* Pill container — inspired by the ss but rephrased for STEAD */}
-      <div className="flex items-center gap-1 bg-ink/90 backdrop-blur-md border border-ink/20 rounded-full px-2 py-1.5 shadow-retro-sm">
+      {/* Console Pill Capsule */}
+      <nav className="flex items-center gap-1.5 bg-[#1a1620]/95 backdrop-blur-md border-2 border-[#1a1620] rounded-full p-1.5 shadow-retro-sm">
         {navItems.map((item) => {
-          const isActive = item.id === activeId;
+          const isActive = item.id === step;
+          const isHome = item.id === 'home';
+
           return (
             <button
               key={item.id}
+              type="button"
               onClick={() => handleClick(item.id)}
               data-cursor="hover"
-              className={`relative px-4 py-1.5 rounded-full text-xs font-mono tracking-wider transition-all duration-300 ${
+              className={`relative px-4 py-1.5 rounded-full text-xs font-sans tracking-wider uppercase font-semibold transition-all duration-200 select-none ${
                 isActive
-                  ? 'bg-cream-paper text-ink font-semibold'
-                  : 'text-cream/50 hover:text-cream/80'
+                  ? 'bg-cream-paper text-ink shadow-sm'
+                  : 'text-cream/60 hover:text-cream hover:bg-cream/10'
               }`}
             >
-              {item.id === 'home' ? <BrandMark size="inline" variant="dark" /> : item.label}
+              {isHome ? (
+                <span className="font-serif italic font-extrabold tracking-widest text-ember text-sm">
+                  STEAD
+                </span>
+              ) : (
+                item.label
+              )}
             </button>
           );
         })}
-      </div>
-    </motion.div>
+      </nav>
+    </motion.header>
   );
 }

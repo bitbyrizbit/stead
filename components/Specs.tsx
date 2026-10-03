@@ -46,9 +46,9 @@ export default function Specs() {
               <div className={`w-10 h-10 rounded-lg bg-ink/5 flex items-center justify-center mb-4 vintage-inset`}>
                 <spec.icon className={`w-5 h-5 ${spec.accent}`} strokeWidth={1.5} />
               </div>
-              <div className="font-mono text-[10px] text-ink-muted tracking-widest mb-1">{spec.label}</div>
-              <div className={`font-serif text-3xl ${spec.accent} tnum tracking-tighter mb-1`}>{spec.value}</div>
-              <div className="text-sm text-ink-muted">{spec.note}</div>
+              <div className="font-sans text-xs text-ink-muted uppercase tracking-[0.14em] font-medium mb-1">{spec.label}</div>
+              <div className={`font-serif text-3xl ${spec.accent} tnum tracking-tighter font-semibold mb-1`}>{spec.value}</div>
+              <div className="text-sm text-ink-muted font-sans">{spec.note}</div>
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-ember scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
             </motion.div>
           ))}
@@ -56,13 +56,13 @@ export default function Specs() {
 
         {/* Retro compatibility bar */}
         <div className="mt-12 flex flex-wrap items-center gap-4 px-6 py-4 rounded-xl border-2 border-ink/15 bg-cream-warm shadow-retro-sm">
-          <span className="font-mono text-[10px] text-ink-muted tracking-widest">Works with</span>
+          <span className="font-sans text-xs text-ink-muted uppercase tracking-[0.14em] font-medium">Works with</span>
           <div className="flex flex-wrap items-center gap-5">
             {['Chrome 90+', 'Firefox 88+', 'Safari 15+', 'Edge 90+', 'Brave', 'Arc'].map((b) => (
-              <span key={b} className="font-mono text-xs text-ink-soft tracking-tight">{b}</span>
+              <span key={b} className="font-sans text-xs text-ink-soft tracking-tight font-semibold">{b}</span>
             ))}
           </div>
-          <span className="ml-auto flex items-center gap-2 font-mono text-[10px] text-moss tracking-widest">
+          <span className="ml-auto flex items-center gap-2 font-sans text-xs text-moss uppercase tracking-[0.14em] font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-moss animate-pulse" />
             Ready to use in seconds
           </span>

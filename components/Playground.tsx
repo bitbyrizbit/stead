@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import BrandMark from '@/components/BrandMark';
+import { sfx } from '@/lib/soundEffects';
 
 function PlaygroundCanvas({
   amplitude,
@@ -89,12 +90,19 @@ function PlaygroundCanvas({
             const pull = (1 - d / 45) * 0.1;
             stableX += (t.x - stableX) * pull;
             stableY += (t.y - stableY) * pull;
-            if (d < t.r + 3) { t.hit = true; t.pulse = 1; }
+            if (d < t.r + 3) {
+              t.hit = true;
+              t.pulse = 1;
+              sfx.playClick(900 + Math.random() * 300);
+            }
           }
         }
       }
 
-      if (targets.every((t) => t.hit)) setTimeout(initTargets, 500);
+      if (targets.every((t) => t.hit)) {
+        sfx.playRoundComplete();
+        setTimeout(initTargets, 500);
+      }
 
       ctx.clearRect(0, 0, w, h);
 
@@ -177,7 +185,11 @@ export default function Playground() {
             <label className="font-mono text-[10px] text-cream/50 tracking-widest">How shaky</label>
             <input
               type="range" min="0" max="10" step="0.5" value={amplitude}
-              onChange={(e) => setAmplitude(parseFloat(e.target.value))}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setAmplitude(val);
+                sfx.playClick(600 + val * 40);
+              }}
               className="w-28 accent-ember"
               data-cursor="hover"
             />
@@ -188,7 +200,11 @@ export default function Playground() {
             <label className="font-mono text-[10px] text-cream/50 tracking-widest">How calm</label>
             <input
               type="range" min="2" max="20" step="0.5" value={damping}
-              onChange={(e) => setDamping(parseFloat(e.target.value))}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setDamping(val);
+                sfx.playClick(800 + val * 20);
+              }}
               className="w-28 accent-ember"
               data-cursor="hover"
             />
@@ -196,7 +212,11 @@ export default function Playground() {
           </div>
 
           <button
-            onClick={() => setMagnetic(!magnetic)}
+            onClick={() => {
+              const next = !magnetic;
+              setMagnetic(next);
+              sfx.playClick(next ? 1100 : 700);
+            }}
             className="flex items-center gap-3"
             data-cursor="hover"
           >

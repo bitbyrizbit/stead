@@ -1,6 +1,8 @@
 "use client";
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import BrandMark from '@/components/BrandMark';
+import Cursor from '@/components/Cursor';
+import { sfx } from '@/lib/soundEffects';
 
 export default function Docs() {
   const [activeSection, setActiveSection] = useState('philosophy');
@@ -13,27 +15,35 @@ export default function Docs() {
   ];
 
   const scrollTo = (id: string) => {
+    sfx.playClick(900);
     setActiveSection(id);
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-bone text-ink font-sans selection:bg-sage selection:text-bone flex cursor-none">
-      <div className="noise-overlay pointer-events-none fixed inset-0 z-50"></div>
+    <div className="min-h-screen bg-cream text-ink font-sans flex cursor-none grain">
+      <Cursor />
+      <div className="noise-overlay pointer-events-none fixed inset-0 z-50" />
       
       {/* Sidebar Nav */}
-      <aside className="fixed left-0 top-0 bottom-0 w-64 border-r border-line p-8 flex flex-col justify-between hidden md:flex z-40 bg-bone">
+      <aside className="fixed left-0 top-0 bottom-0 w-72 border-r-2 border-ink/15 p-8 flex flex-col justify-between hidden md:flex z-40 bg-cream-paper/95 backdrop-blur-md">
         <div>
-          <a href="/" className="font-serif text-2xl tracking-tighter text-ink font-medium hover:text-sage transition-colors">STEAD</a>
-          <div className="text-[9px] font-mono tracking-[0.2em] text-ink-muted mt-2">DOCUMENTATION</div>
+          <a href="/" className="inline-block" data-cursor="hover">
+            <BrandMark size="nav" />
+          </a>
+          <div className="text-[10px] font-sans uppercase tracking-[0.16em] text-ink-muted mt-2 font-bold">
+            Documentation & Architecture
+          </div>
           
-          <nav className="mt-16 flex flex-col gap-4">
+          <nav className="mt-14 flex flex-col gap-4">
             {navItems.map((item) => (
               <button
                 key={item.id}
+                type="button"
                 onClick={() => scrollTo(item.id)}
-                className={`text-left text-xs font-mono tracking-wider transition-colors ${
-                  activeSection === item.id ? 'text-copper font-semibold' : 'text-ink-muted hover:text-ink'
+                data-cursor="hover"
+                className={`text-left text-xs font-sans uppercase tracking-[0.14em] font-semibold transition-colors ${
+                  activeSection === item.id ? 'text-ember' : 'text-ink-muted hover:text-ink'
                 }`}
               >
                 {item.label}
@@ -42,95 +52,101 @@ export default function Docs() {
           </nav>
         </div>
         
-        <div className="text-[10px] font-mono tracking-widest text-ink-muted uppercase">
-          STEAD Documentation
+        <div>
+          <a
+            href="/"
+            data-cursor="hover"
+            className="text-xs text-ink-muted hover:text-ink font-sans uppercase tracking-wider font-semibold flex items-center gap-2"
+          >
+            ← Back to STEAD
+          </a>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="ml-0 md:ml-64 flex-1 px-6 py-24 md:py-32 lg:px-24 max-w-4xl relative z-10">
+      <main className="ml-0 md:ml-72 flex-1 px-8 py-20 md:py-28 lg:px-20 max-w-4xl relative z-10">
         
-        <section id="philosophy" className="mb-32">
-          <h1 className="font-serif text-5xl md:text-6xl tracking-tighter mb-8 leading-none">
+        <section id="philosophy" className="mb-28">
+          <span className="font-sans text-xs text-ember uppercase tracking-[0.16em] font-bold">01 · Philosophy</span>
+          <h1 className="font-serif text-4xl md:text-6xl tracking-tight mt-2 mb-8 leading-[1.05]">
             The hand is human.<br/>
-            <span className="italic text-sage font-light">The cursor is absolute.</span>
+            <span className="italic text-ember font-light">The cursor doesn&apos;t have to shake.</span>
           </h1>
-          <p className="text-lg text-ink-soft leading-relaxed mb-6">
-            Interfaces demand surgical precision from an organ that evolved to throw rocks and grip branches. We built millions of pixels and then asked the biological hand to navigate them without shaking. That was our first mistake.
+          <p className="text-lg text-ink-soft leading-relaxed mb-6 font-serif">
+            Digital interfaces demand micro-millimeter precision from a biological system that evolved for grasping and tool use. When biological tremor causes misclicks and fatigue, the software shouldn&apos;t punish the user—it should forgive and filter.
           </p>
-          <p className="text-lg text-ink-soft leading-relaxed mb-10">
-            STEAD is not a band-aid. It is a fundamental kinematic renegotiation between human biology and digital input. We do not fix the hand. We simply teach the machine to ignore the noise.
-          </p>
-          
-          <div className="p-6 border border-line rounded-sm bg-bone-warm">
-            <h3 className="font-mono text-xs tracking-widest text-copper mb-2">CORE TENET</h3>
-            <p className="text-sm text-ink-muted leading-relaxed">
-              If an interface cannot differentiate between a deliberate gesture and an involuntary tremor, the interface is broken—not the user.
+          <div className="p-6 rounded-2xl bg-cream-paper border-2 border-ink/15 shadow-retro-sm my-6">
+            <p className="text-sm text-ink-muted font-sans leading-relaxed">
+              <strong className="text-ink font-bold">Primary Axiom:</strong> STEAD is an invisible accessibility companion. It runs completely offline on-device, storing zero telemetry and transmitting zero packets.
             </p>
           </div>
         </section>
 
-        <section id="architecture" className="mb-32">
-          <h2 className="font-serif text-4xl tracking-tighter mb-6">02 — Architecture</h2>
-          <p className="text-base text-ink-soft leading-relaxed mb-6">
-            We stripped the stack down to the studs. Wrapping a heavy JavaScript layer over the browser's paint cycle introduces latency—and latency is the enemy of intent. STEAD operates entirely within a WebAssembly (WASM) kernel, compiled from Rust, executing directly against the browser's rendering thread.
+        <section id="architecture" className="mb-28 border-t-2 border-ink/10 pt-16">
+          <span className="font-sans text-xs text-moss uppercase tracking-[0.16em] font-bold">02 · Architecture</span>
+          <h2 className="font-serif text-3xl md:text-4xl tracking-tight mt-2 mb-6">
+            Sub-millisecond Pipeline
+          </h2>
+          <p className="text-base text-ink-soft leading-relaxed mb-6 font-sans">
+            STEAD operates as an ultra-compact (14KB) WebAssembly micro-kernel sitting between the OS pointer event queue and the browser rendering compositor.
           </p>
-          <ul className="flex flex-col gap-4 mb-8">
-            <li className="flex items-start gap-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-sage mt-2 shrink-0"></span>
-              <div>
-                <strong className="block text-sm font-medium mb-1">Sub-millisecond Execution</strong>
-                <span className="text-sm text-ink-muted leading-relaxed">By bypassing the V8 garbage collector, the Fourier dampening algorithm executes in under 0.4ms.</span>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+            <div className="p-5 rounded-xl bg-cream-paper border-2 border-ink/15 shadow-retro-sm">
+              <div className="text-2xl font-serif text-ember font-bold mb-1">0.4ms</div>
+              <div className="text-xs font-sans uppercase tracking-wider text-ink-muted font-semibold">Latency Overhead</div>
+            </div>
+            <div className="p-5 rounded-xl bg-cream-paper border-2 border-ink/15 shadow-retro-sm">
+              <div className="text-2xl font-serif text-moss font-bold mb-1">14KB</div>
+              <div className="text-xs font-sans uppercase tracking-wider text-ink-muted font-semibold">WASM Binary</div>
+            </div>
+            <div className="p-5 rounded-xl bg-cream-paper border-2 border-ink/15 shadow-retro-sm">
+              <div className="text-2xl font-serif text-gold font-bold mb-1">0 Bytes</div>
+              <div className="text-xs font-sans uppercase tracking-wider text-ink-muted font-semibold">Data Transmitted</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="kinematics" className="mb-28 border-t-2 border-ink/10 pt-16">
+          <span className="font-sans text-xs text-ember uppercase tracking-[0.16em] font-bold">03 · Kinematics</span>
+          <h2 className="font-serif text-3xl md:text-4xl tracking-tight mt-2 mb-6">
+            Adaptive One Euro Filtering & Magnetic Gravitation
+          </h2>
+          <p className="text-base text-ink-soft leading-relaxed mb-4 font-sans">
+            Biological tremors predominantly manifest in the 4–12 Hz frequency band. STEAD dynamically modulates cutoff frequencies:
+          </p>
+          <ul className="space-y-3 font-sans text-sm text-ink-soft mb-6">
+            <li className="flex items-start gap-3">
+              <span className="w-2 h-2 rounded-full bg-ember mt-2 shrink-0" />
+              <span><strong>Low-Velocity Stabilization:</strong> When pointer movement slows near targets, cutoff frequency decreases to eliminate micro-jitter completely.</span>
             </li>
-            <li className="flex items-start gap-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-copper mt-2 shrink-0"></span>
-              <div>
-                <strong className="block text-sm font-medium mb-1">Zero Telemetry</strong>
-                <span className="text-sm text-ink-muted leading-relaxed">Input coordinate data is the most sensitive biometric signature you possess. STEAD processes it locally and discards it instantly. Nothing leaves the machine.</span>
-              </div>
+            <li className="flex items-start gap-3">
+              <span className="w-2 h-2 rounded-full bg-moss mt-2 shrink-0" />
+              <span><strong>High-Velocity Tracking:</strong> During rapid ballistic movements, the filter adapts with zero perceived lag.</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="w-2 h-2 rounded-full bg-gold mt-2 shrink-0" />
+              <span><strong>Gravitational Horizon Snap:</strong> Interactive elements cast a 60px invisible potential well that gently guides the cursor toward click targets.</span>
             </li>
           </ul>
         </section>
 
-        <section id="kinematics" className="mb-32">
-          <h2 className="font-serif text-4xl tracking-tighter mb-6">03 — Kinematics</h2>
-          <p className="text-base text-ink-soft leading-relaxed mb-6">
-            Tremors are not random; they are cyclic. Essential tremor typically manifests in the 4 to 12 Hz frequency band. STEAD runs a continuous Fast Fourier Transform (FFT) over the pointer delta, mathematically isolating these frequencies and cleanly subtracting them.
+        <section id="deployment" className="mb-28 border-t-2 border-ink/10 pt-16">
+          <span className="font-sans text-xs text-moss uppercase tracking-[0.16em] font-bold">04 · Deployment</span>
+          <h2 className="font-serif text-3xl md:text-4xl tracking-tight mt-2 mb-6">
+            Browser Extension & Universal Injection
+          </h2>
+          <p className="text-base text-ink-soft leading-relaxed font-sans mb-6">
+            Available as a lightweight browser extension across Chrome, Firefox, Safari, Edge, Brave, and Arc with zero configuration requirements.
           </p>
-          <div className="relative w-full h-48 bg-ink rounded-sm overflow-hidden mb-6 flex items-center justify-center p-8">
-            <svg viewBox="0 0 400 100" className="w-full h-full" fill="none">
-              <path d="M0,50 Q20,20 40,50 T80,50 T120,50 T160,50" stroke="#B87333" strokeOpacity="0.4" strokeWidth="1.5" strokeDasharray="4 4" />
-              <path d="M0,50 L400,50" stroke="#5B6B5A" strokeWidth="2" />
-            </svg>
-            <div className="absolute bottom-4 left-4 text-[10px] font-mono text-bone opacity-50 tracking-widest">
-              fig 1. frequency subtraction
-            </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <a
+              href="/"
+              data-cursor="hover"
+              className="px-6 py-3 rounded-xl bg-ink text-cream-paper text-sm font-semibold shadow-retro-sm hover:bg-ember transition-colors"
+            >
+              Get STEAD Free
+            </a>
           </div>
-          <p className="text-base text-ink-soft leading-relaxed">
-            Complementing the algorithmic dampening is our Magnetic Geometry. Interactive nodes exert a localized gravitational pull. When the cursor breaches the event horizon of a button, it is pulled to the center—turning a strenuous micro-adjustment into a fluid gesture.
-          </p>
-        </section>
-
-        <section id="deployment" className="mb-32">
-          <h2 className="font-serif text-4xl tracking-tighter mb-6">04 — Deployment</h2>
-          <p className="text-base text-ink-soft leading-relaxed mb-6">
-            No bloated SDKs. No mandatory accounts. The engine is packaged as a standard Chrome Extension MV3, weighting precisely 14KB over the wire. It injects a shadow DOM overlay that intercepts and purifies `PointerEvents` before they hit the underlying webpage.
-          </p>
-          
-          <div className="bg-ink p-6 rounded-sm text-bone font-mono text-sm leading-relaxed mb-8">
-            <div className="text-copper-soft mb-2"># Install globally</div>
-            <div className="mb-4">npm install @stead/core</div>
-            <div className="text-sage-pale mb-2"># Initialize the substrate</div>
-            <div>import {'{'} SteadEngine {'}'} from '@stead/core';</div>
-            <div>const engine = new SteadEngine();</div>
-            <div>engine.mount();</div>
-          </div>
-
-          <a href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-ink text-bone text-sm font-medium rounded-sm group hover:shadow-xl transition-shadow cursor-none">
-            Return to application
-            <span className="transition-transform group-hover:translate-x-1">→</span>
-          </a>
         </section>
 
       </main>

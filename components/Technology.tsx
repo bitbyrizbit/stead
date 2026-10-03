@@ -185,8 +185,8 @@ function StackingCard({
         <div className="flex items-start justify-between mb-6">
           <span className={`font-serif text-5xl italic ${card.fg} opacity-30`}>{card.num}</span>
           <div className="text-right">
-            <div className={`font-serif text-2xl ${card.accent} tnum tracking-tighter`}>{card.metric}</div>
-            <div className={`text-[11px] ${card.fg} opacity-50 mt-0.5 tracking-widest font-mono`}>{card.label}</div>
+            <div className={`font-serif text-2xl ${card.accent} tnum tracking-tighter font-semibold`}>{card.metric}</div>
+            <div className={`text-xs ${card.fg} opacity-70 mt-1 uppercase tracking-[0.14em] font-medium font-sans`}>{card.label}</div>
           </div>
         </div>
 
@@ -197,7 +197,7 @@ function StackingCard({
         <h3 className={`font-serif text-2xl lg:text-3xl ${card.fg} tracking-tight mb-3`}>
           {card.title}
         </h3>
-        <p className={`${card.fg} opacity-60 text-sm lg:text-base leading-relaxed max-w-lg`}>
+        <p className={`${card.fg} opacity-70 text-sm lg:text-base leading-relaxed max-w-lg font-sans`}>
           {card.body}
         </p>
       </div>

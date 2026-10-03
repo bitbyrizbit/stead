@@ -1,9 +1,10 @@
 /**
- * DebugPanel — polished version.
- * Same logic, refined layout — header row with icon, cleaner section labels.
+ * DebugPanel — polished laboratory controls with retro styling.
  */
 
 "use client";
+
+import { sfx } from "@/lib/soundEffects";
 
 interface SliderProps {
   label: string;
@@ -20,8 +21,8 @@ function Slider({ label, value, min, max, step, unit = "", onChange }: SliderPro
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between items-baseline">
-        <span className="text-[11px] font-mono text-ink-muted  tracking-widest">{label}</span>
-        <span className="text-[11px] text-ink font-mono tnum">
+        <span className="text-xs font-sans text-ink-muted uppercase tracking-[0.12em] font-medium">{label}</span>
+        <span className="text-xs text-ink font-sans font-bold tnum">
           {value.toFixed(decimals)}{unit}
         </span>
       </div>
@@ -31,9 +32,14 @@ function Slider({ label, value, min, max, step, unit = "", onChange }: SliderPro
         max={max}
         step={step}
         value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-teal"
+        onChange={(e) => {
+          const val = parseFloat(e.target.value);
+          onChange(val);
+          sfx.playClick(700 + val * 20);
+        }}
+        className="w-full accent-ember"
         aria-label={label}
+        data-cursor="hover"
       />
     </div>
   );
@@ -55,41 +61,35 @@ export function DebugPanel({
   onAmplitudeChange, onFrequencyChange, onMinCutoffChange, onBetaChange,
 }: DebugPanelProps) {
   return (
-    <div className="absolute top-6 right-6 z-20 w-64 rounded-sm bg-bone-warm border border-line p-5 flex flex-col gap-5 shadow-sm">
+    <div className="absolute top-24 right-8 z-[80] w-64 rounded-2xl bg-cream-paper/95 border-2 border-ink/20 p-5 flex flex-col gap-5 shadow-retro-sm backdrop-blur-sm pointer-events-auto">
 
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-line pb-2">
-        <span className="text-[10px] font-mono font-medium text-ink  tracking-[0.2em]">
+      <div className="flex items-center justify-between border-b-2 border-ink/10 pb-2">
+        <span className="text-[11px] font-sans font-bold text-ink uppercase tracking-[0.16em]">
           Laboratory Controls
         </span>
-        <div className="w-1.5 h-1.5 rounded-full bg-sage animate-pulse" />
+        <div className="w-2 h-2 rounded-full bg-moss animate-pulse" />
       </div>
 
       {/* Tremor simulation */}
-      <div className="flex flex-col gap-4">
-        <p className="text-[10px] text-sage font-mono  tracking-[0.15em] font-medium">
-          Tremor Generation
+      <div className="flex flex-col gap-3">
+        <p className="text-xs text-ember font-sans uppercase tracking-[0.14em] font-bold">
+          Tremor Generator
         </p>
         <Slider label="Amplitude" value={amplitude} min={0} max={30} step={0.5} unit=" px" onChange={onAmplitudeChange} />
         <Slider label="Frequency" value={frequency} min={1} max={12} step={0.5} unit=" Hz" onChange={onFrequencyChange} />
       </div>
 
-      <div className="border-t border-line-soft" />
+      <div className="border-t border-ink/10" />
 
       {/* Filter */}
-      <div className="flex flex-col gap-4">
-        <p className="text-[10px] text-copper-soft font-mono  tracking-[0.15em] font-medium">
-          Algorithmic Dampener
+      <div className="flex flex-col gap-3">
+        <p className="text-xs text-moss font-sans uppercase tracking-[0.14em] font-bold">
+          One Euro Dampener
         </p>
         <Slider label="minCutoff" value={minCutoff} min={0.1} max={5} step={0.1} unit=" Hz" onChange={onMinCutoffChange} />
         <Slider label="β (speed)" value={beta} min={0.0} max={0.1} step={0.001} onChange={onBetaChange} />
       </div>
-
-      {amplitude === 0 && (
-        <p className="text-[10px] text-sage pt-2 font-mono  tracking-[0.1em]">
-          ✓ Zero amplitude state detected
-        </p>
-      )}
     </div>
   );
 }

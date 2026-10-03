@@ -23,11 +23,20 @@ import CockpitNav from "@/components/CockpitNav";
 import BrandMark from "@/components/BrandMark";
 import { ClickTargetLayer, ClickTargetLayerHandle, TARGET_LABELS } from "@/components/ClickTargetLayer";
 import { TremorInjector } from "@/lib/tremorInjector";
-import type { SPIClick } from "@/lib/steadPrecisionIndex";
+import type { SPIClick, SPIResult } from "@/lib/steadPrecisionIndex";
+import { sfx } from "@/lib/soundEffects";
 
 type Step = "landing" | "calibration" | "spi-results" | "demo";
 
 const DEFAULTS = { amplitude: 8, frequency: 5, minCutoff: 1.0, beta: 0.007 };
+
+const DEFAULT_SPI_RESULT: SPIResult = {
+  score: 72,
+  hitRate: 0.8,
+  avgDeviationPx: 8.5,
+  avgTimeMs: 1400,
+  clicks: 5,
+};
 
 export default function App() {
   const [step, setStep] = useState<Step>("landing");
@@ -85,7 +94,6 @@ export default function App() {
     }, 350);
   }, [activeTarget, steadEnabled]);
 
-  // Set start time when test begins
   useEffect(() => {
     if (activeTarget !== null) {
       targetStartTimeRef.current = performance.now();
@@ -97,12 +105,19 @@ export default function App() {
       {/* Global Cursor */}
       <Cursor />
 
-      {/* Floating Cockpit Nav when in calibration / results / demo */}
+      {/* Floating Cockpit Nav in all steps */}
       {step !== "landing" && (
         <CockpitNav
           step={step}
           onGoHome={() => setStep("landing")}
           onGoCalibration={() => { setStep("calibration"); setActiveTarget(null); }}
+          onGoResults={() => {
+            if (calibrationOutput) {
+              setStep("spi-results");
+            } else {
+              setStep("calibration");
+            }
+          }}
           onGoDemo={() => setStep("demo")}
         />
       )}
@@ -126,10 +141,10 @@ export default function App() {
       )}
 
       {/* Step 3: SPI Results */}
-      {step === "spi-results" && calibrationOutput && (
+      {step === "spi-results" && (
         <SPIResultsScreen
-          presetKey={calibrationOutput.presetKey}
-          spiBeforeSTEAD={calibrationOutput.spiBeforeSTEAD}
+          presetKey={calibrationOutput?.presetKey || "medium"}
+          spiBeforeSTEAD={calibrationOutput?.spiBeforeSTEAD || DEFAULT_SPI_RESULT}
           onContinue={() => setStep("demo")}
         />
       )}
@@ -159,78 +174,91 @@ export default function App() {
           />
 
           {/* Legend (top-left) */}
-          <div className="absolute top-6 left-6 z-20 flex flex-col gap-3 pointer-events-none">
-            <div className="mb-2 pointer-events-auto">
+          <div className="absolute top-24 left-8 z-[80] flex flex-col gap-3 pointer-events-auto">
+            <div className="mb-2">
               <button
+                type="button"
                 onClick={() => setStep("landing")}
-                className="text-left"
+                className="text-left group"
                 data-cursor="hover"
               >
                 <BrandMark size="nav" />
-                <p className="text-[10px] font-mono tracking-[0.2em] text-ink-muted mt-1 uppercase">
+                <p className="text-[10px] font-sans tracking-[0.16em] text-ink-muted mt-1 uppercase font-semibold">
                   your intent, not your tremor
                 </p>
               </button>
             </div>
 
             {/* Cursor legend */}
-            <div className="flex flex-col gap-2 mt-2">
+            <div className="flex flex-col gap-2 mt-1">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full border border-ember border-dashed shrink-0" />
-                <span className="text-ink-soft text-[10px] font-mono tracking-[0.1em]">unassisted pathway</span>
+                <span className="text-ink-soft text-xs font-sans uppercase tracking-[0.12em] font-medium">
+                  unassisted pathway
+                </span>
               </div>
-              {!steadEnabled ? null : (
+              {steadEnabled && (
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-moss shrink-0" />
-                  <span className="text-ink-soft text-[10px] font-mono tracking-[0.1em]">active filter</span>
+                  <span className="text-ink-soft text-xs font-sans uppercase tracking-[0.12em] font-medium">
+                    active filter
+                  </span>
                 </div>
               )}
             </div>
 
             {/* Live params */}
-            <div className="mt-3 flex flex-col gap-1 text-[10px] text-ink-muted font-mono tracking-[0.1em]">
+            <div className="mt-3 flex flex-col gap-1 text-[11px] text-ink-muted font-sans tracking-[0.12em] uppercase font-medium">
               <span>{frequency} Hz · {amplitude} px tremor</span>
               <span>minCutoff={minCutoff.toFixed(2)} β={beta.toFixed(3)}</span>
               {isPersonalised && (
-                <span className="text-moss mt-1 font-medium">profile linked</span>
+                <span className="text-moss mt-1 font-bold">profile linked</span>
               )}
             </div>
           </div>
 
           {/* Top-centre controls */}
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-[90] pointer-events-auto flex flex-col items-center gap-3">
             {/* STEAD toggle */}
             <button
-              onClick={() => setSteadEnabled(v => !v)}
+              type="button"
+              onClick={() => {
+                sfx.playClick(steadEnabled ? 700 : 1100);
+                setSteadEnabled(v => !v);
+              }}
               className={[
-                "px-6 py-2 rounded-lg text-xs font-mono tracking-[0.1em] font-medium transition-all duration-200 border-2 shadow-retro-sm",
+                "px-7 py-2.5 rounded-xl text-xs font-sans tracking-[0.14em] font-bold transition-all duration-200 border-2 shadow-retro-sm uppercase",
                 steadEnabled
-                  ? "bg-moss border-moss text-cream-paper"
-                  : "bg-cream-paper border-ink/20 text-ink-muted hover:border-ink",
+                  ? "bg-moss border-moss text-cream-paper shadow-retro-sm"
+                  : "bg-cream-paper border-ink text-ink-muted hover:border-ink hover:text-ink",
               ].join(" ")}
               data-cursor="hover"
             >
-              STEAD {steadEnabled ? "ACTIVE" : "OFF"}
+              STEAD Protocol {steadEnabled ? "ACTIVE" : "OFF"}
             </button>
 
             {/* Accuracy test toggle */}
             <button
-              onClick={() => setActiveTarget(v => v === null ? 0 : null)}
+              type="button"
+              onClick={() => {
+                sfx.playClick(900);
+                setActiveTarget(v => v === null ? 0 : null);
+              }}
               className={[
-                "px-5 py-1.5 rounded-lg text-xs font-mono tracking-[0.1em] font-medium border-2 transition-all duration-200 shadow-retro-sm",
+                "px-6 py-2 rounded-xl text-xs font-sans tracking-[0.14em] font-bold border-2 transition-all duration-200 shadow-retro-sm uppercase",
                 activeTarget !== null
                   ? "bg-ember border-ember text-cream-paper"
-                  : "bg-cream-paper border-ink/20 text-ink-muted hover:border-ink",
+                  : "bg-cream-paper border-ink/40 text-ink hover:border-ink",
               ].join(" ")}
               data-cursor="hover"
             >
-              {activeTarget !== null ? "Halt test" : "Run precision test"}
+              {activeTarget !== null ? "Halt precision test" : "Run precision test"}
             </button>
 
             {/* Hit feedback */}
             {lastHit && (
               <span className={[
-                "text-xs font-mono tracking-widest font-semibold transition-opacity mt-2",
+                "text-xs font-sans tracking-widest font-bold transition-opacity mt-1 uppercase",
                 lastHit.startsWith("✓") ? "text-moss" : "text-ember",
               ].join(" ")}>
                 {lastHit}
@@ -239,24 +267,28 @@ export default function App() {
           </div>
 
           {/* Debug panel (top-right) */}
-          <DebugPanel
-            amplitude={amplitude} frequency={frequency}
-            minCutoff={minCutoff} beta={beta}
-            onAmplitudeChange={setAmplitude} onFrequencyChange={setFrequency}
-            onMinCutoffChange={setMinCutoff} onBetaChange={setBeta}
-          />
+          <div className="z-[80] pointer-events-auto">
+            <DebugPanel
+              amplitude={amplitude} frequency={frequency}
+              minCutoff={minCutoff} beta={beta}
+              onAmplitudeChange={setAmplitude} onFrequencyChange={setFrequency}
+              onMinCutoffChange={setMinCutoff} onBetaChange={setBeta}
+            />
+          </div>
 
           {/* Accuracy board (bottom-right) */}
-          <AccuracyBoard
-            steadOnClicks={steadOnClicks}
-            steadOffClicks={steadOffClicks}
-          />
+          <div className="z-[80] pointer-events-auto">
+            <AccuracyBoard
+              steadOnClicks={steadOnClicks}
+              steadOffClicks={steadOffClicks}
+            />
+          </div>
 
           {/* Bottom hint */}
           {activeTarget === null && (
-            <div className="absolute bottom-5 left-0 right-0 flex justify-center z-10 pointer-events-none">
-              <p className="text-[10px] text-ink-muted font-mono tracking-[0.15em]">
-                Move your mouse · click target buttons to test precision
+            <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10 pointer-events-none">
+              <p className="text-xs text-ink-muted font-sans tracking-[0.14em] uppercase font-medium">
+                Move cursor across target buttons to test precision
               </p>
             </div>
           )}

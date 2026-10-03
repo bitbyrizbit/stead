@@ -1,16 +1,6 @@
 /**
  * ClickTargetLayer — Real DOM button overlay for Phase 3.
- *
- * Why real DOM instead of canvas rects?
- *   - getBoundingClientRect() works on them, so predictTarget can use their
- *     actual on-screen positions without manual coordinate bookkeeping.
- *   - click() dispatch works natively on them.
- *   - Visual feedback (flash on hit) just works via CSS/state.
- *
- * The buttons sit in an absolutely-positioned overlay above the canvas,
- * using the same layout constants as Phase 2's canvas drawing.
- * They are pointer-events:none by default — the ComparisonCanvas intercepts
- * pointerup and dispatches the corrected click programmatically.
+ * Styled with cream/paper/ink retro palette.
  */
 
 "use client";
@@ -25,22 +15,18 @@ export const TARGET_LABELS = [
   "Download",
 ];
 
-const TARGET_W = 110; // px — keep in sync with ComparisonCanvas constants
-const TARGET_H = 44;
-const TARGET_GAP = 20;
-const TARGET_Y_OFFSET = 80; // from bottom
+const TARGET_W = 120;
+const TARGET_H = 46;
+const TARGET_GAP = 18;
+const TARGET_Y_OFFSET = 80;
 
 export interface ClickTargetLayerHandle {
-  /** Returns all button bounding rects — called by ComparisonCanvas on pointerup. */
   getRects(): DOMRect[];
-  /** Programmatically trigger a click on button at index i. */
   click(index: number): void;
 }
 
 interface ClickTargetLayerProps {
-  /** Index of the "active" target (highlighted) — used in accuracy test mode. */
   activeTarget?: number | null;
-  /** Called when a button is clicked (either raw or predicted). */
   onHit?: (label: string, byPredictor: boolean) => void;
 }
 
@@ -60,7 +46,6 @@ export const ClickTargetLayer = forwardRef<
     click(index: number) {
       const el = buttonRefs.current[index];
       if (!el) return;
-      // Flash feedback
       setFlashIndex(index);
       setTimeout(() => setFlashIndex(null), 300);
       onHit?.(TARGET_LABELS[index], true);
@@ -72,7 +57,7 @@ export const ClickTargetLayer = forwardRef<
 
   return (
     <div
-      className="absolute inset-0 pointer-events-none"
+      className="absolute inset-0 pointer-events-none z-20"
       aria-hidden="true"
     >
       {/* Button row — centred horizontally, anchored from bottom */}
@@ -91,13 +76,13 @@ export const ClickTargetLayer = forwardRef<
             ref={(el) => { buttonRefs.current[i] = el; }}
             tabIndex={-1}
             className={[
-              "flex items-center justify-center text-[11px] font-mono  tracking-[0.1em] font-medium rounded-sm border transition-all duration-150",
-              "text-ink-soft border-line bg-bone shadow-sm",
+              "flex items-center justify-center text-xs font-sans tracking-wider uppercase font-bold rounded-xl border-2 transition-all duration-150",
+              "text-ink border-ink/20 bg-cream-paper shadow-retro-sm",
               activeTarget === i
-                ? "border-sage bg-sage-pale text-sage ring-1 ring-teal"
+                ? "border-ember bg-ember/15 text-ember ring-2 ring-ember/40 scale-105"
                 : "",
               flashIndex === i
-                ? "bg-sage border-sage text-bone scale-95 ring-2 ring-teal-soft shadow-lg"
+                ? "bg-moss border-moss text-cream-paper scale-95 ring-2 ring-moss shadow-lg"
                 : "",
             ]
               .filter(Boolean)
@@ -106,7 +91,7 @@ export const ClickTargetLayer = forwardRef<
               width: TARGET_W,
               height: TARGET_H,
               marginRight: i < TARGET_LABELS.length - 1 ? TARGET_GAP : 0,
-              pointerEvents: "none", // ComparisonCanvas owns all pointer events
+              pointerEvents: "none",
               cursor: "none",
             }}
             onClick={() => onHit?.(label, false)}

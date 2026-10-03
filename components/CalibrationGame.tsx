@@ -1,12 +1,6 @@
 /**
  * CalibrationGame — Phase 5 rewrite
- *
- * What changed:
- *  - Zero jargon: "calibration" is gone. UI says "let's see how you move."
- *  - Preset name shown on completion, never raw numbers.
- *  - SPI (STEAD Precision Index) computed from trajectories and returned
- *    to the parent via onComplete so the results screen can show it.
- *  - API persist still fire-and-forget, never blocks demo.
+ * Full cream/paper aesthetic with vintage diagnostics card & high-contrast targets.
  */
 
 "use client";
@@ -20,23 +14,24 @@ import {
 } from "@/lib/calibration";
 import {
   deviationToPreset,
-  getPresetLabel,
   getPresetParams,
   type PresetKey,
 } from "@/lib/sensitivityPresets";
 import { detectInputType, type InputType } from "@/lib/inputDetection";
 import { estimateSPIFromDeviation, type SPIResult } from "@/lib/steadPrecisionIndex";
 import { TremorInjector } from "@/lib/tremorInjector";
+import BrandMark from "@/components/BrandMark";
+import { sfx } from "@/lib/soundEffects";
 
 const TARGET_POSITIONS_NORM = [
-  { x: 0.2,  y: 0.3  },
-  { x: 0.75, y: 0.25 },
+  { x: 0.2,  y: 0.35  },
+  { x: 0.75, y: 0.3  },
   { x: 0.5,  y: 0.55 },
-  { x: 0.15, y: 0.7  },
-  { x: 0.8,  y: 0.65 },
+  { x: 0.22, y: 0.72  },
+  { x: 0.78, y: 0.68 },
 ];
 
-const TARGET_RADIUS = 28;
+const TARGET_RADIUS = 30;
 
 function makeSessionId() {
   return `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -55,7 +50,7 @@ async function persistCalibration(sessionId: string, result: CalibrationResult) 
       }),
     });
   } catch {
-    /* fire-and-forget — never block */
+    /* fire-and-forget */
   }
 }
 
@@ -67,46 +62,51 @@ export interface CalibrationOutput {
   inputType: InputType;
 }
 
-export interface CalibrationGameProps {
+interface CalibrationGameProps {
   injector?: TremorInjector;
   onComplete: (output: CalibrationOutput) => void;
   onSkip: () => void;
 }
 
-export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGameProps) {
+export function CalibrationGame({
+  injector,
+  onComplete,
+  onSkip,
+}: CalibrationGameProps) {
   const [step, setStep] = useState<"intro" | "playing" | "done">("intro");
   const [targetIdx, setTargetIdx] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [vw, setVw] = useState(1200);
+  const [vh, setVh] = useState(800);
 
-  const sessionId = useRef(makeSessionId());
-  const trajectoriesRef = useRef<CalibrationPoint[][]>([]);
-  const currentTrajRef = useRef<CalibrationPoint[]>([]);
-  const clickTimesRef = useRef<number[]>([]);
-  const targetStartTimeRef = useRef<number>(0);
-  const rawPos = useRef({ x: 0, y: 0 });
-  const inputTypeRef = useRef<InputType>("mouse");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafId = useRef<number | null>(null);
 
-  const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth  : 1280);
-  const [vh, setVh] = useState(typeof window !== "undefined" ? window.innerHeight : 720);
+  const currentTrajRef = useRef<CalibrationPoint[]>([]);
+  const trajectoriesRef = useRef<CalibrationPoint[][]>([]);
+  const clickTimesRef = useRef<number[]>([]);
+  const rawPos = useRef({ x: 0, y: 0 });
+  const targetStartTimeRef = useRef(0);
+  const sessionId = useRef(makeSessionId());
+  const inputTypeRef = useRef<InputType>("mouse");
 
   useEffect(() => {
-    const resize = () => { setVw(window.innerWidth); setVh(window.innerHeight); };
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    const handleResize = () => {
+      setVw(window.innerWidth);
+      setVh(window.innerHeight);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const norm = TARGET_POSITIONS_NORM[targetIdx] ?? { x: 0.5, y: 0.5 };
+  const norm = TARGET_POSITIONS_NORM[targetIdx];
   const targetX = norm.x * vw;
   const targetY = norm.y * vh;
+  const progress = targetIdx;
 
   const onPointerMove = useCallback((e: PointerEvent) => {
     rawPos.current = { x: e.clientX, y: e.clientY };
-    if (inputTypeRef.current === "mouse") {
-      const detected = detectInputType(e);
-      if (detected !== "mouse") inputTypeRef.current = detected;
-    }
+    inputTypeRef.current = detectInputType(e);
   }, []);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
     return () => window.removeEventListener("pointermove", onPointerMove as EventListener);
   }, [onPointerMove]);
 
-  // rAF recording loop
+  // Canvas drawing loop
   useEffect(() => {
     if (step !== "playing") return;
     const canvas = canvasRef.current;
@@ -134,33 +134,37 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       ctx.clearRect(0, 0, vw, vh);
 
       // Target ring
-      const pulse = Math.sin(now / 300) * 4;
+      const pulse = Math.sin(now / 250) * 4;
       ctx.beginPath();
       ctx.arc(targetX, targetY, TARGET_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(16,185,129,0.05)";
+      ctx.fillStyle = "rgba(232, 84, 43, 0.08)";
       ctx.fill();
-      ctx.strokeStyle = "rgba(16,185,129,0.8)";
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#e8542b";
+      ctx.lineWidth = 2.5;
       ctx.stroke();
+
       ctx.beginPath();
-      ctx.arc(targetX, targetY, TARGET_RADIUS + 6 + pulse, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(16,185,129,0.2)";
-      ctx.lineWidth = 1;
+      ctx.arc(targetX, targetY, TARGET_RADIUS + 8 + pulse, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(232, 84, 43, 0.25)";
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Crosshair
-      ctx.strokeStyle = "rgba(16,185,129,0.4)";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#e8542b";
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(targetX - 10, targetY); ctx.lineTo(targetX + 10, targetY);
-      ctx.moveTo(targetX, targetY - 10); ctx.lineTo(targetX, targetY + 10);
+      ctx.moveTo(targetX - 12, targetY); ctx.lineTo(targetX + 12, targetY);
+      ctx.moveTo(targetX, targetY - 12); ctx.lineTo(targetX, targetY + 12);
       ctx.stroke();
 
       // Cursor dot
       ctx.beginPath();
-      ctx.arc(x, y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,255,255,0.95)"; // white
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = "#1a1620";
       ctx.fill();
+      ctx.strokeStyle = "#e8542b";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
 
       rafId.current = requestAnimationFrame(tick);
     };
@@ -178,24 +182,22 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
     clickTimesRef.current.push(clickTimeMs);
     currentTrajRef.current = [];
 
+    sfx.playTargetHit(600 + targetIdx * 90);
+
     const next = targetIdx + 1;
-    setProgress(next);
 
     if (next >= TARGET_POSITIONS_NORM.length) {
       setStep("done");
+      sfx.playRoundComplete();
 
-      const trajectories = trajectoriesRef.current;
-      const calibration = computeCalibration(trajectories);
-
-      // Per-target deviations for SPI
-      const perTargetDev = trajectories.map(measureTrajectoryDeviation);
-      const avgDev = perTargetDev.reduce((a, b) => a + b, 0) / perTargetDev.length;
+      const calibration = computeCalibration(trajectoriesRef.current);
+      const allDeviations = trajectoriesRef.current.map(measureTrajectoryDeviation);
+      const avgDev = allDeviations.reduce((a, b) => a + b, 0) / allDeviations.length;
       const avgClickTime = clickTimesRef.current.reduce((a, b) => a + b, 0) / clickTimesRef.current.length;
 
       const presetKey = deviationToPreset(avgDev);
       const presetParams = getPresetParams(presetKey, inputTypeRef.current);
 
-      // Override calibration params with the snapped preset
       const snappedCalibration: CalibrationResult = {
         ...calibration,
         minCutoff: presetParams.minCutoff,
@@ -203,7 +205,6 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       };
 
       const spiBeforeSTEAD = estimateSPIFromDeviation(avgDev, avgClickTime);
-
       persistCalibration(sessionId.current, snappedCalibration);
 
       setTimeout(() => onComplete({
@@ -212,7 +213,7 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
         spiBeforeSTEAD,
         clickTimesMs: clickTimesRef.current,
         inputType: inputTypeRef.current,
-      }), 800);
+      }), 700);
 
     } else {
       setTargetIdx(next);
@@ -220,35 +221,9 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
     }
   }, [step, targetIdx, onComplete]);
 
-  // Reset start time when target changes
   useEffect(() => {
     if (step === "playing") targetStartTimeRef.current = performance.now();
   }, [targetIdx, step]);
-
-  // Fallback timeout: If a user struggles for >10s on one target, they have severe tremor.
-  // Don't leave them trapped. Auto-complete with the Strong preset.
-  useEffect(() => {
-    if (step !== "playing") return;
-    const interval = setInterval(() => {
-      const elapsed = performance.now() - targetStartTimeRef.current;
-      if (elapsed > 10000) { // 10 seconds timeout
-        setStep("done");
-        const presetParams = getPresetParams("strong", inputTypeRef.current);
-        const fallbackCalibration = { minCutoff: presetParams.minCutoff, beta: presetParams.beta, avgDeviation: 20 };
-        const spiBeforeSTEAD = estimateSPIFromDeviation(20, 10000);
-        
-        persistCalibration(sessionId.current, fallbackCalibration);
-        setTimeout(() => onComplete({
-          calibration: fallbackCalibration,
-          presetKey: "strong",
-          spiBeforeSTEAD,
-          clickTimesMs: [10000, 10000, 10000, 10000, 10000],
-          inputType: inputTypeRef.current,
-        }), 800);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [step, onComplete]);
 
   useEffect(() => {
     window.addEventListener("click", handleClick);
@@ -256,19 +231,20 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
   }, [handleClick]);
 
   return (
-    <div className="absolute inset-0 z-30 bg-[#09090b] flex flex-col items-center justify-center">
+    <div className="absolute inset-0 z-30 bg-cream grain flex flex-col items-center justify-center select-none">
+      <div className="absolute inset-0 retro-grid-lg opacity-30 pointer-events-none" />
 
       {step === "playing" && (
         <>
-          <canvas ref={canvasRef} className="absolute inset-0" style={{ cursor: "none" }} />
-          <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
-            <p className="text-ink-muted text-[10px] font-mono  tracking-[0.2em] font-medium">
-              {progress + 1} of {TARGET_POSITIONS_NORM.length} — acquire target
+          <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ cursor: "none" }} />
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
+            <p className="text-ink text-xs font-sans uppercase tracking-[0.16em] font-semibold">
+              Node {progress + 1} of {TARGET_POSITIONS_NORM.length} — Click to acquire
             </p>
-            <div className="w-48 h-1 bg-bone-dim rounded-full overflow-hidden">
+            <div className="w-56 h-2 bg-cream-dim rounded-full overflow-hidden border border-ink/20">
               <div
-                className="h-full bg-sage transition-all duration-300"
-                style={{ width: `${(progress / TARGET_POSITIONS_NORM.length) * 100}%` }}
+                className="h-full bg-ember transition-all duration-300"
+                style={{ width: `${((progress + 1) / TARGET_POSITIONS_NORM.length) * 100}%` }}
               />
             </div>
           </div>
@@ -276,43 +252,60 @@ export function CalibrationGame({ injector, onComplete, onSkip }: CalibrationGam
       )}
 
       {step === "intro" && (
-        <div className="flex flex-col items-center gap-8 text-center max-w-sm px-6 bg-bone p-10 rounded-sm border border-line shadow-sm">
+        <div className="relative z-40 flex flex-col items-center gap-8 text-center max-w-md px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
           <div>
-            <h2 className="text-2xl text-ink font-serif tracking-tighter mb-3">
-              Kinematic Calibration
+            <span className="font-sans text-xs text-ember uppercase tracking-[0.16em] font-bold">
+              Kinematic Setup
+            </span>
+            <h2 className="text-3xl text-ink font-serif tracking-tighter mt-1 mb-3">
+              Motor Diagnostic
             </h2>
-            <p className="text-ink-soft text-sm leading-relaxed">
-              Click the 5 circular nodes as they appear across the arena. 
-              This 10-second diagnostic establishes your baseline motor profile.
+            <p className="text-ink-soft text-sm leading-relaxed font-sans">
+              Click the 5 circular target nodes as they appear across your screen. 
+              This brief diagnostic computes your hand’s baseline tremor frequency and locks in your custom filter.
             </p>
           </div>
 
           <div className="w-full flex flex-col gap-3">
             <button
-              onClick={() => { currentTrajRef.current = []; setStep("playing"); }}
-              className="group relative w-full py-3 bg-ink text-bone text-sm font-medium rounded-sm overflow-hidden"
+              type="button"
+              onClick={() => {
+                sfx.playClick(1000);
+                currentTrajRef.current = [];
+                setStep("playing");
+              }}
+              data-cursor="hover"
+              className="group relative w-full py-3.5 bg-ink text-cream-paper text-sm font-semibold rounded-xl overflow-hidden shadow-retro-sm"
             >
-              <span className="relative z-10">Initiate Diagnostic</span>
-              <span className="absolute inset-0 bg-sage translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                Initiate Diagnostic
+                <span>→</span>
+              </span>
+              <span className="absolute inset-0 bg-ember translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </button>
             <button
-              onClick={onSkip}
-              className="w-full py-2 text-ink-muted text-sm hover:text-ink font-medium transition-colors"
+              type="button"
+              onClick={() => {
+                sfx.playClick(600);
+                onSkip();
+              }}
+              data-cursor="hover"
+              className="w-full py-2 text-ink-muted text-xs hover:text-ink font-medium transition-colors uppercase tracking-wider font-sans"
             >
-              Skip calibration
+              Skip to live test
             </button>
           </div>
         </div>
       )}
 
       {step === "done" && (
-        <div className="flex flex-col items-center gap-6 text-center px-6 bg-bone p-10 rounded-sm border border-line shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-sage-pale border border-sage flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-sage"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div className="relative z-40 flex flex-col items-center gap-6 text-center px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
+          <div className="w-16 h-16 rounded-full bg-moss/15 border-2 border-moss flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4a6438" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
           <div>
-            <p className="text-ink font-serif tracking-tighter text-2xl">Profile Established</p>
-            <p className="text-ink-soft text-sm mt-2">Configuring algorithmic dampening...</p>
+            <p className="text-ink font-serif tracking-tight text-3xl font-semibold">Profile Established</p>
+            <p className="text-ink-muted text-xs uppercase tracking-wider mt-2 font-sans font-medium">Configuring real-time One Euro dampening...</p>
           </div>
         </div>
       )}

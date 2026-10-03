@@ -6,6 +6,7 @@ import Nav from './Nav';
 import Hero from './Hero';
 import Manifesto from './Manifesto';
 import Technology from './Technology';
+import SplitLensDemo from './SplitLensDemo';
 import Specs from './Specs';
 import Playground from './Playground';
 import Extension from './Extension';
@@ -40,6 +41,7 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
 
         <Manifesto />
         <Technology />
+        <SplitLensDemo />
         <Specs />
         <Playground />
         <Extension onStart={onStart} />

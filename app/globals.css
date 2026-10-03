@@ -2,8 +2,9 @@
 
 @theme {
   --font-serif: "Fraunces", Georgia, serif;
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "Space Grotesk", system-ui, sans-serif;
+  --font-label: "Space Grotesk", system-ui, sans-serif;
 
   /* Palette from new UI */
   --color-cream: #f2e8d0;
@@ -144,8 +145,8 @@ a, button, [data-cursor] { cursor: none; }
   letter-spacing: -0.025em;
 }
 
-.font-mono {
-  font-feature-settings: 'zero', 'ss01';
+.font-mono, .font-label {
+  letter-spacing: 0.08em;
 }
 
 .tnum { font-variant-numeric: tabular-nums; }
@@ -164,6 +165,12 @@ html.lenis, html.lenis body { height: auto; }
   background: #f6eed9;
   border: 1.5px solid #1a1620;
   box-shadow: 6px 6px 0 #1a1620;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.vintage-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 10px 10px 0 #1a1620;
 }
 
 .vintage-inset {
