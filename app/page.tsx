@@ -174,7 +174,7 @@ export default function App() {
           />
 
           {/* Legend (top-left) */}
-          <div className="absolute top-24 left-8 z-[80] flex flex-col gap-3 pointer-events-auto">
+          <div className="absolute top-28 left-8 z-[80] flex flex-col gap-3 pointer-events-auto">
             <div className="mb-2">
               <button
                 type="button"
@@ -218,7 +218,7 @@ export default function App() {
           </div>
 
           {/* Top-centre controls */}
-          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-[90] pointer-events-auto flex flex-col items-center gap-3">
+          <div className="absolute top-28 left-1/2 -translate-x-1/2 z-[90] pointer-events-auto flex flex-col items-center gap-3">
             {/* STEAD toggle */}
             <button
               type="button"

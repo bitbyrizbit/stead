@@ -16,10 +16,10 @@ export function SPIResultsScreen({ presetKey, spiBeforeSTEAD, onContinue }: SPIR
   const hitPct = Math.round(spiBeforeSTEAD.hitRate * 100);
 
   return (
-    <div className="absolute inset-0 z-40 flex items-center justify-center bg-cream grain select-none">
+    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center pt-28 pb-10 px-6 bg-cream grain select-none overflow-y-auto">
       <div className="absolute inset-0 retro-grid-lg opacity-30 pointer-events-none" />
 
-      <div className="relative z-40 flex flex-col items-center gap-6 text-center max-w-md px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
+      <div className="relative z-40 flex flex-col items-center gap-6 text-center max-w-md w-full px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
         {/* Icon & Title */}
         <div className="flex flex-col items-center gap-3">
           <div className="w-16 h-16 rounded-full bg-moss/15 border-2 border-moss flex items-center justify-center">

@@ -18,17 +18,20 @@ export default function Hero({ onStart }: HeroProps) {
   return (
     <section ref={ref} className="relative min-h-screen pt-28 pb-16 px-6 lg:px-10 overflow-hidden">
       <div className="absolute inset-0 retro-grid-lg opacity-30 pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[700px] h-[700px] pointer-events-none opacity-[0.06]" style={{ background: 'radial-gradient(circle at 70% 30%, #e8542b 0%, transparent 55%)' }} />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] pointer-events-none opacity-[0.04]" style={{ background: 'radial-gradient(circle at 30% 70%, #4a6438 0%, transparent 55%)' }} />
+      
+      {/* Warm Ambient Orange & Ember Tint Glows */}
+      <div className="absolute top-0 right-0 w-[750px] h-[750px] pointer-events-none opacity-[0.10]" style={{ background: 'radial-gradient(circle at 70% 30%, #e8542b 0%, transparent 60%)' }} />
+      <div className="absolute bottom-0 left-0 w-[650px] h-[650px] pointer-events-none opacity-[0.07]" style={{ background: 'radial-gradient(circle at 30% 70%, #e8542b 0%, transparent 60%)' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] pointer-events-none opacity-[0.05]" style={{ background: 'radial-gradient(ellipse, #f07a52 0%, transparent 65%)' }} />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] pointer-events-none opacity-[0.015] retro-grid rounded-full" />
 
       {/* Floating ambient shapes */}
-      <motion.div className="absolute top-[20%] right-[8%] w-24 h-24 rounded-full border-2 border-ember/15 pointer-events-none" animate={{ y: [0, -20, 0], rotate: [0, 90, 0] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
+      <motion.div className="absolute top-[20%] right-[8%] w-24 h-24 rounded-full border-2 border-ember/20 pointer-events-none" animate={{ y: [0, -20, 0], rotate: [0, 90, 0] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
       <motion.div className="absolute bottom-[15%] left-[5%] w-16 h-16 pointer-events-none" animate={{ y: [0, 25, 0], rotate: [0, -180, 0] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}>
-        <div className="w-full h-full border-2 border-moss/15 rotate-45" />
+        <div className="w-full h-full border-2 border-ember/20 rotate-45" />
       </motion.div>
-      <motion.div className="absolute top-[60%] right-[15%] w-3 h-3 rounded-full bg-gold/20 pointer-events-none" animate={{ y: [0, -30, 0], opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
-      <motion.div className="absolute top-[35%] left-[12%] w-2 h-2 rounded-full bg-ember/25 pointer-events-none" animate={{ y: [0, 20, 0], opacity: [0.15, 0.4, 0.15] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }} />
+      <motion.div className="absolute top-[60%] right-[15%] w-3 h-3 rounded-full bg-gold/25 pointer-events-none" animate={{ y: [0, -30, 0], opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
+      <motion.div className="absolute top-[35%] left-[12%] w-2 h-2 rounded-full bg-ember/30 pointer-events-none" animate={{ y: [0, 20, 0], opacity: [0.15, 0.4, 0.15] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }} />
 
       <motion.div style={{ y, opacity }} className="max-w-[1300px] mx-auto">
         <div className="mb-10">
@@ -57,7 +60,7 @@ export default function Hero({ onStart }: HeroProps) {
               <span className="text-ember">{'>'}</span>
               <span className="text-ink-muted uppercase">3D Pointer Physics</span>
               <span className="text-ink tnum font-semibold">0.4ms</span>
-              <span className="flex items-center gap-1.5 text-moss uppercase">
+              <span className="flex items-center gap-1.5 text-moss uppercase font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-moss animate-pulse" />
                 Active Deconvolution
               </span>
@@ -65,6 +68,7 @@ export default function Hero({ onStart }: HeroProps) {
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
+                type="button"
                 onClick={() => {
                   sfx.playClick(1000);
                   onStart?.();
@@ -72,7 +76,7 @@ export default function Hero({ onStart }: HeroProps) {
                 className="group relative px-6 py-3 bg-ink text-cream-paper text-sm rounded-lg overflow-hidden shadow-retro-sm"
                 data-cursor="hover"
               >
-                <span className="relative z-10 flex items-center gap-2">
+                <span className="relative z-10 flex items-center gap-2 font-semibold">
                   Bring <BrandMark size="inline" variant="dark" /> home
                   <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
                 </span>

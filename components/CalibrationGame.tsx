@@ -1,6 +1,6 @@
 /**
  * CalibrationGame — Phase 5 rewrite
- * Full cream/paper aesthetic with vintage diagnostics card & high-contrast targets.
+ * Full cream/paper aesthetic with generous mid-screen layout.
  */
 
 "use client";
@@ -20,15 +20,14 @@ import {
 import { detectInputType, type InputType } from "@/lib/inputDetection";
 import { estimateSPIFromDeviation, type SPIResult } from "@/lib/steadPrecisionIndex";
 import { TremorInjector } from "@/lib/tremorInjector";
-import BrandMark from "@/components/BrandMark";
 import { sfx } from "@/lib/soundEffects";
 
 const TARGET_POSITIONS_NORM = [
-  { x: 0.2,  y: 0.35  },
-  { x: 0.75, y: 0.3  },
-  { x: 0.5,  y: 0.55 },
-  { x: 0.22, y: 0.72  },
-  { x: 0.78, y: 0.68 },
+  { x: 0.2,  y: 0.38  },
+  { x: 0.75, y: 0.34  },
+  { x: 0.5,  y: 0.58 },
+  { x: 0.22, y: 0.74  },
+  { x: 0.78, y: 0.70 },
 ];
 
 const TARGET_RADIUS = 30;
@@ -154,7 +153,7 @@ export function CalibrationGame({
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(targetX - 12, targetY); ctx.lineTo(targetX + 12, targetY);
-      ctx.moveTo(targetX, targetY - 12); ctx.lineTo(targetX, targetY + 12);
+      ctx.moveTo(targetX, targetY - 12); ctx.lineTo(targetX + 12, targetY);
       ctx.stroke();
 
       // Cursor dot
@@ -231,13 +230,13 @@ export function CalibrationGame({
   }, [handleClick]);
 
   return (
-    <div className="absolute inset-0 z-30 bg-cream grain flex flex-col items-center justify-center select-none">
+    <div className="absolute inset-0 z-30 bg-cream grain flex flex-col items-center justify-center pt-28 pb-10 px-6 select-none overflow-y-auto">
       <div className="absolute inset-0 retro-grid-lg opacity-30 pointer-events-none" />
 
       {step === "playing" && (
         <>
           <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ cursor: "none" }} />
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
+          <div className="absolute top-28 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
             <p className="text-ink text-xs font-sans uppercase tracking-[0.16em] font-semibold">
               Node {progress + 1} of {TARGET_POSITIONS_NORM.length} — Click to acquire
             </p>
@@ -252,7 +251,7 @@ export function CalibrationGame({
       )}
 
       {step === "intro" && (
-        <div className="relative z-40 flex flex-col items-center gap-8 text-center max-w-md px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
+        <div className="relative z-40 flex flex-col items-center gap-8 text-center max-w-md w-full px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
           <div>
             <span className="font-sans text-xs text-ember uppercase tracking-[0.16em] font-bold">
               Kinematic Setup
@@ -299,7 +298,7 @@ export function CalibrationGame({
       )}
 
       {step === "done" && (
-        <div className="relative z-40 flex flex-col items-center gap-6 text-center px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
+        <div className="relative z-40 flex flex-col items-center gap-6 text-center max-w-md w-full px-8 py-10 bg-cream-paper rounded-2xl border-2 border-ink shadow-retro">
           <div className="w-16 h-16 rounded-full bg-moss/15 border-2 border-moss flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4a6438" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>

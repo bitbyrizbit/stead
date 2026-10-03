@@ -8,8 +8,8 @@ type BrandMarkProps = {
 };
 
 const sizes: Record<NonNullable<BrandMarkProps['size']>, string> = {
-  inline: 'text-[0.9em] tracking-[0.06em] px-1',
-  nav: 'text-xl tracking-[0.10em]',
+  inline: 'text-[0.95em] tracking-[0.05em] px-0.5',
+  nav: 'text-xl tracking-[0.08em]',
   hero: 'text-[clamp(3.4rem,13vw,10rem)] tracking-[0.06em]',
   footer: 'text-[clamp(3.5rem,16vw,14rem)] tracking-[0.06em]',
 };
@@ -19,14 +19,18 @@ export default function BrandMark({
   size = 'nav',
   variant = 'light',
 }: BrandMarkProps) {
-  const textColor = variant === 'dark' ? '#f6eed9' : '#1a1620';
+  const isInline = size === 'inline';
+  const textColor = isInline
+    ? (variant === 'dark' ? '#f6eed9' : '#1a1620')
+    : (variant === 'dark' ? '#f6eed9' : '#1a1620');
+  
   const shadowColor = '#e8542b';
-  const glowColor = 'rgba(232,84,43,0.18)';
+  const glowColor = 'rgba(232,84,43,0.2)';
 
   const style: CSSProperties = {
     color: textColor,
-    textShadow: `2.5px 3.5px 0 ${shadowColor}, 0 0 24px ${glowColor}`,
-    transform: 'rotate(-3deg)',
+    textShadow: isInline ? 'none' : `2.5px 3.5px 0 ${shadowColor}, 0 0 24px ${glowColor}`,
+    transform: isInline ? 'none' : 'rotate(-3deg)',
     display: 'inline-block',
     fontStyle: 'italic',
     fontWeight: 800,
