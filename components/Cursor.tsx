@@ -1,5 +1,5 @@
-﻿"use client";
-import { useEffect, useState } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export default function Cursor() {
@@ -41,7 +41,7 @@ export default function Cursor() {
     <>
       <motion.div className="fixed top-0 left-0 z-[9999] pointer-events-none" style={{ x: rawX, y: rawY }}>
         <motion.div
-          className="rounded-full border border-copper/50"
+          className="rounded-full border border-ember"
           animate={{ width: hovering ? 48 : 24, height: hovering ? 48 : 24, opacity: visible ? 1 : 0 }}
           transition={{ type: 'spring', stiffness: 200, damping: 22 }}
           style={{ x: '-50%', y: '-50%' }}
@@ -58,4 +58,3 @@ export default function Cursor() {
     </>
   );
 }
-

@@ -1,40 +1,32 @@
-﻿"use client";
-import { useRef } from 'react';
+"use client";
+import { useRef, type ReactNode } from 'react';
 import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
+import BrandMark from '@/components/BrandMark';
 
-/** SVG illustration for Algorithmic Dampening — a waveform that separates into clean + noise */
 function WaveSVG() {
   return (
     <svg viewBox="0 0 400 180" className="w-full h-full" fill="none">
-      <motion.path
+      <line x1="0" y1="90" x2="400" y2="90" stroke="#1a1620" strokeOpacity="0.06" strokeWidth="0.5" strokeDasharray="2 4" />
+      <path
         d="M0,90 Q25,60 50,90 T100,90 T150,90 T200,90 T250,90 T300,90 T350,90 T400,90"
-        stroke="#5B6B5A"
-        strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: 'easeInOut' }}
+        stroke="#4a6438"
+        strokeWidth="2"
       />
-      <motion.path
+      <path
         d="M0,90 Q12,30 25,90 T50,90 Q62,150 75,90 T100,90 Q112,40 125,90 T150,90 Q162,140 175,90 T200,90 Q212,35 225,90 T250,90 Q262,145 275,90 T300,90 Q312,42 325,90 T350,90 Q362,135 375,90 T400,90"
-        stroke="#B87333"
-        strokeWidth="0.8"
-        strokeOpacity="0.4"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.2 }}
+        stroke="#e8542b"
+        strokeWidth="1.2"
+        strokeOpacity="0.5"
       />
-      <line x1="0" y1="90" x2="400" y2="90" stroke="#1A1612" strokeOpacity="0.08" strokeWidth="0.5" strokeDasharray="2 4" />
     </svg>
   );
 }
 
-/** SVG for Magnetic Geometry — radial pull lines toward a center node */
 function MagneticSVG() {
   return (
     <svg viewBox="0 0 400 180" className="w-full h-full" fill="none">
-      <circle cx="200" cy="90" r="8" fill="#5B6B5A" fillOpacity="0.2" stroke="#5B6B5A" strokeWidth="1" />
+      <motion.circle cx="200" cy="90" r="12" fill="#f6eed9" fillOpacity="0.9" stroke="#f6eed9" strokeWidth="1.5" animate={{ r: [12, 15, 12] }} transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }} />
+      <circle cx="200" cy="90" r="5" fill="#f6eed9" />
       {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
         const rad = (angle * Math.PI) / 180;
         const x2 = 200 + Math.cos(rad) * 70;
@@ -46,120 +38,115 @@ function MagneticSVG() {
             y1={y2}
             x2="200"
             y2="90"
-            stroke="#1A1612"
-            strokeOpacity="0.12"
-            strokeWidth="0.8"
+            stroke="#f6eed9"
+            strokeOpacity="0.34"
+            strokeWidth="1.2"
             initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: i * 0.08 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.8, delay: i * 0.08, repeat: Infinity, repeatType: 'reverse', repeatDelay: 1.5 }}
           />
         );
       })}
       <motion.circle
         cx="200" cy="90" r="40"
-        stroke="#B87333"
-        strokeOpacity="0.2"
-        strokeWidth="0.8"
+        stroke="#e8542b"
+        strokeOpacity="0.55"
+        strokeWidth="1.2"
         strokeDasharray="3 3"
         initial={{ scale: 0.6, opacity: 0 }}
-        whileInView={{ scale: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease: 'easeOut' }}
+        animate={{ scale: [0.6, 1.1, 1], opacity: [0, 1, 1] }}
+        transition={{ duration: 1.5, ease: 'easeOut', repeat: Infinity, repeatType: 'reverse', repeatDelay: 1 }}
         style={{ transformOrigin: '200px 90px' }}
       />
       <motion.circle
         cx="200" cy="90" r="65"
-        stroke="#B87333"
-        strokeOpacity="0.1"
-        strokeWidth="0.6"
+        stroke="#e8542b"
+        strokeOpacity="0.32"
+        strokeWidth="1"
         strokeDasharray="3 3"
         initial={{ scale: 0.6, opacity: 0 }}
-        whileInView={{ scale: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.15, ease: 'easeOut' }}
+        animate={{ scale: [0.6, 1.1, 1], opacity: [0, 1, 1] }}
+        transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut', repeat: Infinity, repeatType: 'reverse', repeatDelay: 1 }}
         style={{ transformOrigin: '200px 90px' }}
       />
     </svg>
   );
 }
 
-/** SVG for Zero Telemetry — a closed loop, nothing leaves */
 function TelemetrySVG() {
   return (
     <svg viewBox="0 0 400 180" className="w-full h-full" fill="none">
       <motion.rect
         x="120" y="40" width="160" height="100" rx="4"
-        stroke="#E8E2D5"
-        strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: 'easeInOut' }}
+        stroke="#f6eed9"
+        strokeWidth="1.2"
+        initial={{ pathLength: 0, opacity: 0.7 }}
+        animate={{ pathLength: [0, 1], opacity: [0.7, 1, 0.7] }}
+        transition={{ pathLength: { duration: 2, ease: 'easeInOut', repeat: Infinity, repeatType: 'reverse', repeatDelay: 1 }, opacity: { duration: 2, repeat: Infinity } }}
       />
-      <text x="200" y="95" textAnchor="middle" fontSize="11" fill="#E8E2D5" fillOpacity="0.4" fontFamily="Inter">
-        local Â· wasm
+      <text x="200" y="95" textAnchor="middle" fontSize="11" fill="#f6eed9" fillOpacity="0.5" fontFamily="Fraunces, serif" letterSpacing="1">
+        stays on your screen
       </text>
       <motion.path
         d="M280,90 Q320,90 320,130 Q320,150 280,150 L140,150 Q120,150 120,130 Q120,90 140,90"
-        stroke="#C89055"
-        strokeWidth="0.8"
-        strokeOpacity="0.4"
+        stroke="#c99a3a"
+        strokeWidth="1.2"
+        strokeOpacity="0.6"
         strokeDasharray="3 3"
         initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, delay: 0.3 }}
+        animate={{ pathLength: [0, 1], strokeDashoffset: [0, -24] }}
+        transition={{ pathLength: { duration: 2, delay: 0.3, repeat: Infinity, repeatType: 'reverse', repeatDelay: 0.5 }, strokeDashoffset: { duration: 2, repeat: Infinity, ease: 'linear' } }}
+        style={{ strokeDashoffset: 0 }}
       />
-      <line x1="50" y1="90" x2="120" y2="90" stroke="#E8E2D5" strokeOpacity="0.2" strokeWidth="0.8" />
-      <circle cx="50" cy="90" r="3" fill="#E8E2D5" fillOpacity="0.4" />
-      <line x1="50" y1="40" x2="50" y2="140" stroke="#E8E2D5" strokeOpacity="0.1" strokeWidth="0.5" strokeDasharray="2 3" />
-      <text x="50" y="160" textAnchor="middle" fontSize="9" fill="#E8E2D5" fillOpacity="0.35" fontFamily="Inter">
-        input
+      <line x1="50" y1="90" x2="120" y2="90" stroke="#f6eed9" strokeOpacity="0.35" strokeWidth="1.2" />
+      <motion.circle cx="50" cy="90" r="4" fill="#f6eed9" fillOpacity="0.6" animate={{ r: [4, 6, 4] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} />
+      <line x1="50" y1="40" x2="50" y2="140" stroke="#f6eed9" strokeOpacity="0.12" strokeWidth="0.5" strokeDasharray="2 3" />
+      <text x="50" y="160" textAnchor="middle" fontSize="9" fill="#f6eed9" fillOpacity="0.4" fontFamily="Fraunces, serif" letterSpacing="1">
+        you
       </text>
-      <text x="200" y="160" textAnchor="middle" fontSize="9" fill="#E8E2D5" fillOpacity="0.35" fontFamily="Inter">
+      <text x="200" y="160" textAnchor="middle" fontSize="9" fill="#f6eed9" fillOpacity="0.4" fontFamily="Fraunces, serif" letterSpacing="1">
         nothing leaves
       </text>
     </svg>
   );
 }
 
-const cards = [
+const cards: { num: string; title: string; body: ReactNode; metric: string; label: string; visual: ReactNode; bg: string; border: string; fg: string; accent: string }[] = [
   {
     num: 'i',
-    title: 'Algorithmic dampening',
-    body: 'Continuous real-time Fourier analysis identifies high-frequency cyclic tremors in the 4–12 Hz band. The kernel subtracts these oscillations from the pointer stream without introducing perceptible lag — a critically damped second-order system running at native refresh.',
-    metric: '4–12 Hz',
-    label: 'tremor band',
+    title: 'It hears the wobble',
+    body: <>Your hand has a natural rhythm to its shake, somewhere between four and twelve times a second. <BrandMark size="inline" /> tunes in to that rhythm and smooths it out, so the cursor flows instead of stutters. You feel the difference the moment it kicks in. You never feel it working.</>,
+    metric: '4 to 12 Hz',
+    label: 'natural tremor range',
     visual: <WaveSVG />,
-    bg: 'bg-bone',
-    border: 'border-line/50',
+    bg: 'bg-cream',
+    border: 'border-ink/20',
     fg: 'text-ink',
-    accent: 'text-sage',
+    accent: 'text-moss',
   },
   {
     num: 'ii',
-    title: 'Magnetic geometry',
-    body: 'Interactive nodes exert a radial gravitational pull on the stabilized cursor. As the pointer enters a node\'s influence radius, it is drawn organically toward the center — transforming strenuous fine-clicks into effortless gestures. The pull curve is configurable per element.',
+    title: 'It lends a gentle hand',
+    body: <>When your cursor drifts close to something clickable, <BrandMark size="inline" variant="dark" /> gives it a tiny, invisible nudge toward the center. The kind of help that feels like luck, not correction. Fiddly little targets become effortless, and you stop holding your breath every time you need to hit something small.</>,
     metric: '60px',
-    label: 'influence radius',
+    label: 'gentle reach',
     visual: <MagneticSVG />,
     bg: 'bg-ink',
-    border: 'border-bone/10',
-    fg: 'text-bone',
-    accent: 'text-copper-soft',
+    border: 'border-cream/10',
+    fg: 'text-cream',
+    accent: 'text-ember-soft',
   },
   {
     num: 'iii',
-    title: 'Zero telemetry',
-    body: 'All kinematic processing happens locally in real-time. No coordinate data ever leaves the device. The kernel is a single 14KB WASM module that runs in a Web Worker, isolated from the main thread. Auditable and mathematically guaranteed.',
+    title: 'It keeps everything to itself',
+    body: <>Everything <BrandMark size="inline" variant="dark" /> does, it does right there on your screen. Nothing about your hand, your cursor, or your clicks ever leaves your device. It is a tiny, quiet companion that asks for nothing and talks to no one. Free, transparent, and honest down to the last line.</>,
     metric: '14KB',
-    label: 'wasm module',
+    label: 'small enough to trust',
     visual: <TelemetrySVG />,
-    bg: 'bg-sage',
-    border: 'border-bone/15',
-    fg: 'text-bone',
-    accent: 'text-copper-pale',
+    bg: 'bg-moss',
+    border: 'border-cream/15',
+    fg: 'text-cream',
+    accent: 'text-gold-soft',
   },
 ];
 
@@ -174,33 +161,15 @@ function StackingCard({
   total: number;
   scrollYProgress: MotionValue<number>;
 }) {
-  // Each card enters during its own segment of the scroll
-  // Card 0 is always visible (starts at y=0)
-  // Card i enters from below (y = 100vh) to y = 0 during segment [i/total, (i+1)/total]
   const segmentStart = index / total;
   const segmentEnd = (index + 1) / total;
 
-  // Card slides up from below to cover the previous card
-  const y = useTransform(
-    scrollYProgress,
-    [segmentStart, segmentEnd],
-    ['100vh', '0vh']
-  );
+  const y = useTransform(scrollYProgress, [segmentStart, segmentEnd], ['100vh', '0vh']);
 
-  // Previous card scales down and dims as the next card covers it
-  // This applies to the CURRENT card when the NEXT card starts covering it
   const coverStart = segmentEnd;
   const coverEnd = Math.min(coverStart + 1 / total, 1);
-  const scale = useTransform(
-    scrollYProgress,
-    [coverStart, coverEnd],
-    [1, 0.94]
-  );
-  const dim = useTransform(
-    scrollYProgress,
-    [coverStart, coverEnd],
-    [1, 0.5]
-  );
+  const scale = useTransform(scrollYProgress, [coverStart, coverEnd], [1, 0.94]);
+  const dim = useTransform(scrollYProgress, [coverStart, coverEnd], [1, 0.5]);
 
   return (
     <motion.div
@@ -212,16 +181,16 @@ function StackingCard({
       }}
       className={`absolute inset-0 flex items-center justify-center ${card.bg}`}
     >
-      <div className={`w-full max-w-[900px] mx-auto rounded-sm border ${card.border} grain p-8 lg:p-12`}>
+      <div className={`w-full max-w-[900px] mx-auto rounded-xl border-2 ${card.border} grain p-8 lg:p-12 shadow-retro`}>
         <div className="flex items-start justify-between mb-6">
           <span className={`font-serif text-5xl italic ${card.fg} opacity-30`}>{card.num}</span>
           <div className="text-right">
             <div className={`font-serif text-2xl ${card.accent} tnum tracking-tighter`}>{card.metric}</div>
-            <div className={`text-[11px] ${card.fg} opacity-40 mt-0.5`}>{card.label}</div>
+            <div className={`text-[11px] ${card.fg} opacity-50 mt-0.5 tracking-widest font-mono`}>{card.label}</div>
           </div>
         </div>
 
-        <div className="h-[140px] mb-6">
+        <div className="h-[180px] mb-6">
           {card.visual}
         </div>
 
@@ -241,19 +210,8 @@ export default function Technology() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
 
   return (
-    <section ref={ref} id="technology" className="relative bg-bone-dim" style={{ height: `${cards.length * 100}vh` }}>
+    <section ref={ref} id="technology" className="relative bg-cream-dim" style={{ height: `${cards.length * 100}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Section label */}
-        <div className="absolute top-0 left-0 right-0 px-6 lg:px-10 pt-12 z-50 flex items-center justify-between pointer-events-none">
-          <div className="flex items-center gap-3 text-[11px] text-ink-muted">
-            <span>03</span>
-            <span className="w-8 h-px bg-line" />
-            <span>The substrate</span>
-          </div>
-          <div className="text-[11px] text-ink-muted">scroll to stack</div>
-        </div>
-
-        {/* Progress indicator */}
         <div className="absolute bottom-0 left-0 right-0 px-6 lg:px-10 pb-8 z-50 pointer-events-none">
           <div className="flex items-center gap-2">
             {cards.map((_, i) => {
@@ -293,7 +251,6 @@ function CardProgress({
 }) {
   const width = useTransform(scrollYProgress, [start, end], ['0%', '100%']);
   return (
-    <motion.div className="absolute top-0 left-0 h-full bg-copper" style={{ width }} />
+    <motion.div className="absolute top-0 left-0 h-full bg-ember" style={{ width }} />
   );
 }
-

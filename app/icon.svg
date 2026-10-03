@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,800&amp;display=swap');
+    .s-mark {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 800;
+      font-style: italic;
+      fill: #f6eed9;
+    }
+  </style>
+  <text x="16" y="25" text-anchor="middle" font-size="28" class="s-mark" transform="rotate(-6 16 16)">S</text>
+</svg>

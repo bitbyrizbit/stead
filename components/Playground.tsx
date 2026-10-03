@@ -1,5 +1,6 @@
-﻿"use client";
+"use client";
 import { useEffect, useRef, useState } from 'react';
+import BrandMark from '@/components/BrandMark';
 
 function PlaygroundCanvas({
   amplitude,
@@ -101,27 +102,27 @@ function PlaygroundCanvas({
         if (t.pulse > 0) {
           ctx.beginPath();
           ctx.arc(t.x, t.y, t.r + t.pulse * 20, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(184, 115, 51, ${t.pulse * 0.4})`;
+          ctx.strokeStyle = `rgba(232, 84, 43, ${t.pulse * 0.5})`;
           ctx.lineWidth = 1; ctx.stroke();
           t.pulse -= dt * 1.5;
         }
         ctx.beginPath();
         ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
         if (t.hit) {
-          ctx.fillStyle = 'rgba(184, 115, 51, 0.1)'; ctx.fill();
-          ctx.strokeStyle = 'rgba(184, 115, 51, 0.3)';
+          ctx.fillStyle = 'rgba(232, 84, 43, 0.12)'; ctx.fill();
+          ctx.strokeStyle = 'rgba(232, 84, 43, 0.35)';
         } else {
-          ctx.fillStyle = 'rgba(232, 226, 213, 0.02)'; ctx.fill();
-          ctx.strokeStyle = 'rgba(232, 226, 213, 0.1)';
+          ctx.fillStyle = 'rgba(246, 238, 217, 0.04)'; ctx.fill();
+          ctx.strokeStyle = 'rgba(246, 238, 217, 0.12)';
         }
         ctx.lineWidth = 1; ctx.stroke();
       }
 
       if (inside) {
         ctx.beginPath(); ctx.arc(tremX, tremY, 4, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(184, 115, 51, 0.35)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.strokeStyle = 'rgba(232, 84, 43, 0.4)'; ctx.lineWidth = 1; ctx.stroke();
         ctx.beginPath(); ctx.arc(stableX, stableY, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#E8E2D5'; ctx.fill();
+        ctx.fillStyle = '#e8542b'; ctx.fill();
       }
 
       rafId = requestAnimationFrame(render);
@@ -139,13 +140,11 @@ function PlaygroundCanvas({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[clamp(320px,48vh,460px)] rounded-sm border border-bone/10 bg-ink overflow-hidden"
+      className="relative w-full h-[clamp(320px,48vh,460px)] rounded-xl border-2 border-ink/15 bg-ink overflow-hidden scanlines-strong shadow-retro"
       data-cursor="hover"
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
-      <div className="absolute top-4 left-4 text-[11px] text-bone/40">
-        Playground Â· 6Ã—4 grid
-      </div>
+      <div className="absolute top-3 left-3 font-mono text-[9px] text-cream/40 tracking-wider">Move around to feel the difference</div>
     </div>
   );
 }
@@ -156,45 +155,44 @@ export default function Playground() {
   const [magnetic, setMagnetic] = useState(true);
 
   return (
-    <section id="playground" className="relative py-28 lg:py-36 px-6 lg:px-10 bg-ink grain">
-      <div className="max-w-[1300px] mx-auto">
-        <div className="flex items-center gap-3 mb-10 text-[11px] text-bone/40">
-          <span>04</span>
-          <span className="w-8 h-px bg-bone/20" />
-          <span>Playground</span>
-        </div>
-
+    <section id="playground" className="relative py-28 lg:py-36 px-6 lg:px-10 bg-ink grain overflow-hidden">
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none opacity-[0.04]" style={{ background: 'radial-gradient(circle, #e8542b 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 retro-grid opacity-20 pointer-events-none" />
+      <div className="relative max-w-[1300px] mx-auto">
         <div className="mb-10">
-          <h2 className="font-serif text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.05] tracking-tighter text-bone max-w-[700px]">
+          <h2 className="font-serif text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.05] tracking-tighter text-cream max-w-[700px]">
             Feel the{' '}
-            <span className="italic text-copper-soft">difference</span>
-            {' '}before you install.
+            <span className="italic text-ember-soft">difference</span>
+            {' '}before you commit.
           </h2>
+          <p className="mt-4 font-serif text-lg text-cream/50 max-w-[500px] leading-relaxed">
+            Slide things around. Pretend your hand is having a rough day. Then feel <BrandMark size="inline" variant="dark" /> smooth it out in real time.
+          </p>
         </div>
 
         <PlaygroundCanvas amplitude={amplitude} damping={damping} magnetic={magnetic} />
 
         <div className="mt-8 flex flex-wrap items-center gap-x-12 gap-y-6">
           <div className="flex items-center gap-4">
-            <label className="text-[11px] text-bone/40">Tremor amplitude</label>
+            <label className="font-mono text-[10px] text-cream/50 tracking-widest">How shaky</label>
             <input
               type="range" min="0" max="10" step="0.5" value={amplitude}
               onChange={(e) => setAmplitude(parseFloat(e.target.value))}
-              className="w-28 accent-copper"
+              className="w-28 accent-ember"
               data-cursor="hover"
             />
-            <span className="text-[11px] text-bone/60 tnum w-8">{amplitude.toFixed(1)}</span>
+            <span className="font-mono text-[11px] text-cream/70 tnum w-8">{amplitude.toFixed(1)}</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="text-[11px] text-bone/40">Dampening</label>
+            <label className="font-mono text-[10px] text-cream/50 tracking-widest">How calm</label>
             <input
               type="range" min="2" max="20" step="0.5" value={damping}
               onChange={(e) => setDamping(parseFloat(e.target.value))}
-              className="w-28 accent-copper"
+              className="w-28 accent-ember"
               data-cursor="hover"
             />
-            <span className="text-[11px] text-bone/60 tnum w-8">{damping.toFixed(1)}</span>
+            <span className="font-mono text-[11px] text-cream/70 tnum w-8">{damping.toFixed(1)}</span>
           </div>
 
           <button
@@ -202,19 +200,17 @@ export default function Playground() {
             className="flex items-center gap-3"
             data-cursor="hover"
           >
-            <span className="text-[11px] text-bone/40">Magnetic pull</span>
-            <span className={`w-9 h-5 rounded-full relative transition-colors ${magnetic ? 'bg-copper' : 'bg-bone/15'}`}>
-              <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-bone transition-transform ${magnetic ? 'translate-x-4' : 'translate-x-0.5'}`} />
+            <span className="font-mono text-[10px] text-cream/50 tracking-widest">Gentle pull</span>
+            <span className={`w-9 h-5 rounded-full relative transition-colors ${magnetic ? 'bg-ember' : 'bg-cream/15'}`}>
+              <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-cream transition-transform ${magnetic ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </span>
           </button>
         </div>
 
-        <p className="mt-6 text-sm text-bone/40 max-w-md leading-relaxed">
-          Adjust the tremor amplitude to simulate different severities. Toggle
-          magnetic pull to feel the gravitational snap toward targets.
+        <p className="mt-6 text-sm text-cream/40 max-w-md leading-relaxed">
+          Nudge the shakiness up to pretend your hand is having a rough day. Toggle the gentle pull to feel the cursor lean toward things you can click.
         </p>
       </div>
     </section>
   );
 }
-

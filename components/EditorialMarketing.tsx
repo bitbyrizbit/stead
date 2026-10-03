@@ -1,10 +1,12 @@
 "use client";
 import React from 'react';
 import SmoothScroll from './SmoothScroll';
+import ScrollProgress from './ScrollProgress';
 import Nav from './Nav';
 import Hero from './Hero';
 import Manifesto from './Manifesto';
 import Technology from './Technology';
+import Specs from './Specs';
 import Playground from './Playground';
 import Extension from './Extension';
 import Footer from './Footer';
@@ -18,6 +20,7 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
   return (
     <SmoothScroll>
       <div className="noise-overlay" />
+      <ScrollProgress />
       <Nav onStart={onStart} />
 
       <main>
@@ -25,22 +28,21 @@ export function EditorialMarketing({ onStart }: EditorialMarketingProps) {
 
         <Marquee
           items={[
-            'Sub-millisecond',
-            'Fourier dampening',
-            'Magnetic geometry',
-            'Zero telemetry',
-            '14KB WASM',
-            'Open core',
-            'No permissions',
-            'For 6 million hands',
+            'Your intent, not your tremor',
+            'Nothing leaves your screen',
+            'A gentler web for every hand',
+            'Quietly brilliant',
+            'Free, forever',
+            'One install, the whole web gentled',
           ]}
-          className="border-y border-line bg-bone"
+          className="border-y-2 border-ink/15 bg-cream"
         />
 
         <Manifesto />
         <Technology />
+        <Specs />
         <Playground />
-        <Extension />
+        <Extension onStart={onStart} />
       </main>
 
       <Footer />

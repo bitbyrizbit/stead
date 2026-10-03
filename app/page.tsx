@@ -1,13 +1,11 @@
 /**
- * STEAD — main page.
+ * STEAD — main application page.
  *
- * Four steps, one page, no routing:
- *   "landing"     → LandingScreen
+ * Steps:
+ *   "landing"     → EditorialMarketing (new UI)
  *   "calibration" → CalibrationGame (full-screen overlay)
  *   "spi-results" → SPIResultsScreen (shows baseline SPI and preset)
- *   "demo"        → ComparisonCanvas + all overlays
- *
- * The step state lives here and is the single source of truth for the flow.
+ *   "demo"        → ComparisonCanvas + live overlays + CockpitNav
  */
 
 "use client";
@@ -21,6 +19,8 @@ import LoadingScreen from "@/components/LoadingScreen";
 import { DebugPanel } from "@/components/DebugPanel";
 import { AccuracyBoard } from "@/components/AccuracyBoard";
 import Cursor from "@/components/Cursor";
+import CockpitNav from "@/components/CockpitNav";
+import BrandMark from "@/components/BrandMark";
 import { ClickTargetLayer, ClickTargetLayerHandle, TARGET_LABELS } from "@/components/ClickTargetLayer";
 import { TremorInjector } from "@/lib/tremorInjector";
 import type { SPIClick } from "@/lib/steadPrecisionIndex";
@@ -74,7 +74,7 @@ export default function App() {
       setSteadOffClicks(prev => [...prev, clickData]);
     }
     
-    setLastHit(isHit ? "✓ Hit" : "✗ Miss");
+    setLastHit(isHit ? "✓ Steady hit" : "Miss");
     setTimeout(() => setLastHit(null), 700);
     setTimeout(() => {
       setActiveTarget(i => {
@@ -93,11 +93,22 @@ export default function App() {
   }, [activeTarget]);
 
   return (
-    <main className={`relative w-screen select-none cursor-none bg-bone text-ink ${step === "landing" ? "min-h-screen" : "h-screen overflow-hidden"}`}>
-      {/* Global Cursor so it persists everywhere */}
+    <main className={`relative w-screen select-none cursor-none bg-cream text-ink ${step === "landing" ? "min-h-screen" : "h-screen overflow-hidden"}`}>
+      {/* Global Cursor */}
       <Cursor />
 
+      {/* Floating Cockpit Nav when in calibration / results / demo */}
+      {step !== "landing" && (
+        <CockpitNav
+          step={step}
+          onGoHome={() => setStep("landing")}
+          onGoCalibration={() => { setStep("calibration"); setActiveTarget(null); }}
+          onGoDemo={() => setStep("demo")}
+        />
+      )}
+
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
+
       {/* Step 1: Landing */}
       {step === "landing" && (
         <div className="relative z-40">
@@ -105,7 +116,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Step 2: Calibration ── */}
+      {/* Step 2: Calibration */}
       {step === "calibration" && (
         <CalibrationGame
           injector={amplitude > 0 ? injectorRef.current : undefined}
@@ -114,7 +125,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Step 3: SPI Results ── */}
+      {/* Step 3: SPI Results */}
       {step === "spi-results" && calibrationOutput && (
         <SPIResultsScreen
           presetKey={calibrationOutput.presetKey}
@@ -123,7 +134,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Step 4: Live demo ── */}
+      {/* Step 4: Live demo */}
       {step === "demo" && (
         <>
           {/* Canvas layer */}
@@ -132,9 +143,9 @@ export default function App() {
             frequency={frequency}
             minCutoff={minCutoff}
             beta={beta}
-            rawMode={!steadEnabled} // Connect "Reset to raw" (STEAD OFF) directly to canvas rawMode
+            rawMode={!steadEnabled}
             targetLayerRef={targetLayerRef}
-            onClickResolved={handleClickResolved} // Always track clicks, rawMode will pass them through
+            onClickResolved={handleClickResolved}
           />
 
           {/* DOM button targets */}
@@ -147,92 +158,87 @@ export default function App() {
             }}
           />
 
-          {/* ── Legend (top-left) ── */}
+          {/* Legend (top-left) */}
           <div className="absolute top-6 left-6 z-20 flex flex-col gap-3 pointer-events-none">
-            {/* Wordmark */}
             <div className="mb-2 pointer-events-auto">
               <button
                 onClick={() => setStep("landing")}
                 className="text-left"
                 data-cursor="hover"
               >
-                <p className="font-serif text-2xl tracking-tighter text-ink font-medium leading-none">STEAD</p>
-                <p className="text-[10px] font-mono tracking-[0.2em] text-ink-muted mt-1 uppercase">your intent, not your tremor</p>
+                <BrandMark size="nav" />
+                <p className="text-[10px] font-mono tracking-[0.2em] text-ink-muted mt-1 uppercase">
+                  your intent, not your tremor
+                </p>
               </button>
             </div>
 
             {/* Cursor legend */}
             <div className="flex flex-col gap-2 mt-2">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full border border-copper border-dashed shrink-0" />
-                <span className="text-ink-soft text-[10px] font-mono  tracking-[0.1em]">Unassisted Pathway</span>
+                <span className="w-2.5 h-2.5 rounded-full border border-ember border-dashed shrink-0" />
+                <span className="text-ink-soft text-[10px] font-mono tracking-[0.1em]">unassisted pathway</span>
               </div>
               {!steadEnabled ? null : (
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-sage shrink-0" />
-                  <span className="text-ink-soft text-[10px] font-mono  tracking-[0.1em]">Active Filter</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-moss shrink-0" />
+                  <span className="text-ink-soft text-[10px] font-mono tracking-[0.1em]">active filter</span>
                 </div>
               )}
             </div>
 
             {/* Live params */}
-            <div className="mt-3 flex flex-col gap-1 text-[10px] text-ink-muted font-mono  tracking-[0.1em]">
+            <div className="mt-3 flex flex-col gap-1 text-[10px] text-ink-muted font-mono tracking-[0.1em]">
               <span>{frequency} Hz · {amplitude} px tremor</span>
               <span>minCutoff={minCutoff.toFixed(2)} β={beta.toFixed(3)}</span>
               {isPersonalised && (
-                <span className="text-sage mt-1 font-medium">Profile Linked</span>
+                <span className="text-moss mt-1 font-medium">profile linked</span>
               )}
             </div>
           </div>
 
-          {/* ── Top-centre controls ── */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+          {/* Top-centre controls */}
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
             {/* STEAD toggle */}
             <button
               onClick={() => setSteadEnabled(v => !v)}
               className={[
-                "px-6 py-2 rounded-sm text-[11px] font-mono  tracking-[0.1em] font-medium transition-all duration-200 border",
+                "px-6 py-2 rounded-lg text-xs font-mono tracking-[0.1em] font-medium transition-all duration-200 border-2 shadow-retro-sm",
                 steadEnabled
-                  ? "bg-sage border-sage text-bone"
-                  : "bg-bone-warm border-line text-ink-muted hover:bg-bone-dim",
+                  ? "bg-moss border-moss text-cream-paper"
+                  : "bg-cream-paper border-ink/20 text-ink-muted hover:border-ink",
               ].join(" ")}
+              data-cursor="hover"
             >
-              STEAD Protocol {steadEnabled ? "ACTIVE" : "DISABLED"}
+              STEAD {steadEnabled ? "ACTIVE" : "OFF"}
             </button>
 
             {/* Accuracy test toggle */}
             <button
               onClick={() => setActiveTarget(v => v === null ? 0 : null)}
               className={[
-                "px-5 py-1.5 rounded-sm text-[11px] font-mono  tracking-[0.1em] font-medium border transition-all duration-200",
+                "px-5 py-1.5 rounded-lg text-xs font-mono tracking-[0.1em] font-medium border-2 transition-all duration-200 shadow-retro-sm",
                 activeTarget !== null
-                  ? "bg-copper-soft border-copper-soft text-ink"
-                  : "bg-bone-warm border-line text-ink-muted hover:bg-bone-dim",
+                  ? "bg-ember border-ember text-cream-paper"
+                  : "bg-cream-paper border-ink/20 text-ink-muted hover:border-ink",
               ].join(" ")}
+              data-cursor="hover"
             >
-              {activeTarget !== null ? "Halt diagnostic" : "Run diagnostic"}
-            </button>
-
-            {/* Re-calibrate */}
-            <button
-              onClick={() => { setStep("calibration"); setActiveTarget(null); }}
-              className="text-[10px] text-ink-muted font-mono  tracking-[0.15em] hover:text-ink transition-colors mt-1 underline decoration-line underline-offset-4"
-            >
-              Recalibrate
+              {activeTarget !== null ? "Halt test" : "Run precision test"}
             </button>
 
             {/* Hit feedback */}
             {lastHit && (
               <span className={[
-                "text-xs font-mono  tracking-widest font-semibold transition-opacity mt-2",
-                lastHit.startsWith("✓") ? "text-sage" : "text-ink-soft",
+                "text-xs font-mono tracking-widest font-semibold transition-opacity mt-2",
+                lastHit.startsWith("✓") ? "text-moss" : "text-ember",
               ].join(" ")}>
                 {lastHit}
               </span>
             )}
           </div>
 
-          {/* ── Debug panel (top-right) ── */}
+          {/* Debug panel (top-right) */}
           <DebugPanel
             amplitude={amplitude} frequency={frequency}
             minCutoff={minCutoff} beta={beta}
@@ -240,17 +246,17 @@ export default function App() {
             onMinCutoffChange={setMinCutoff} onBetaChange={setBeta}
           />
 
-          {/* ── Accuracy board (bottom-right) ── */}
+          {/* Accuracy board (bottom-right) */}
           <AccuracyBoard
             steadOnClicks={steadOnClicks}
             steadOffClicks={steadOffClicks}
           />
 
-          {/* ── Bottom hint ── */}
+          {/* Bottom hint */}
           {activeTarget === null && (
             <div className="absolute bottom-5 left-0 right-0 flex justify-center z-10 pointer-events-none">
-              <p className="text-[10px] text-ink-muted font-mono  tracking-[0.15em]">
-                Move your mouse · click the buttons below to test accuracy
+              <p className="text-[10px] text-ink-muted font-mono tracking-[0.15em]">
+                Move your mouse · click target buttons to test precision
               </p>
             </div>
           )}
